@@ -24,9 +24,22 @@ import java.util.Queue;
  */
 public class AlphaBeta implements Strategy{
     
-    
     public void alphabeta(Node node, int depth, int alpha, int beta, Player max){
         
+        
+        
+        if(depth==0){
+            
+        }
+        
+        
+        
+        if(node.getBoard().getCurrentPossibleSquares().isEmpty()){
+            node.getBoard().pass();
+        } else{
+            Square best_move = node.getBoard().getCurrentPossibleSquares().iterator().
+            
+        }
     }
 
     @Override
@@ -35,13 +48,16 @@ public class AlphaBeta implements Strategy{
         Player player = board.getCurrentPlayer();
         Queue<Node> open_list = new PriorityQueue<>(20, nodeComparator);
         return null;
+        
     }
+    
+
     
     public static Comparator<Node> nodeComparator = new Comparator<Node>(){
         @Override
         public int compare (Node n1, Node n2){
             if(n1.getF() == n2.getF()){
-                return n1.getH() - n2.getH();
+                return n1.getF();
             } else{
                 return n1.getF() - n2.getF();
             }
@@ -58,16 +74,14 @@ final class Node{
     private int f;
     private Node parent;
     
-    public Node(Board node, int playerMoves, int opponentMoves){
+    public Node(Board node, int playerMoves){
         this.node = node;
-        this.g = playerMoves;
-        this.h = opponentMoves;
-        this.f = playerMoves - opponentMoves;
+        this.f = playerMoves;
     }
 
 
     
-    public Board getNode(){
+    public Board getBoard(){
         return node;
     }
     
@@ -77,7 +91,7 @@ final class Node{
     
     public void setG(int g){
         this.g = g;
-        this.f = g + h;
+        this.f = g;
     }
     
     public int getH(){
