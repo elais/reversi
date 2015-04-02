@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-
+import java.util.function.UnaryOperator;
 import edu.uab.cis.reversi.Board;
 import java.util.Comparator;
 import edu.uab.cis.reversi.Move;
@@ -28,12 +28,37 @@ import java.util.function.Function;
  *
  * @author elais
  */
+class FunctionalUtils {
+	static final UnaryOperator<Node> coin_parity = (final Node node) -> {
+          int coin_parity = 100 * ((node.getBoard().getPlayerSquareCounts().get(node.getPlayer()) -
+              node.getBoard().getPlayerSquareCounts().get(node.getOpponent()))/
+              (node.getBoard().getPlayerSquareCounts().get(node.getPlayer())+
+              node.getBoard().getPlayerSquareCounts().get(node.getOpponent())));
+              node.setF(coin_parity);		
+          return node;
+	};
+}
+
+class Evaluator {
+       /** a variable referencing a lambda taking two Integer arguments and returning an Integer: */
+	private final UnaryOperator<Node> strategy;
+ 
+	public Evaluator(final UnaryOperator<Node> lambda) {
+                strategy = lambda;
+        }
+ 
+        public Node executeStrategy(final Node a) {
+                return strategy.apply(a);
+        }
+}
+
+
 public class Group2Strategy implements Strategy{
-    public static Node alphabeta(Node node, int depth, int alpha, int beta){
+    public static Node alphabeta(Node node, int depth, int alpha, int beta, Evaluator evaluate){
       Node parent = node;
       List<Node> child_list = new ArrayList();
       if(depth==0)
-        return evaluate(node);
+        return evaluate.executeStrategy(node);
       
       if(parent.getBoard().getCurrentPossibleSquares().isEmpty()){
         Node n = new Node(parent.getBoard().pass());
@@ -50,7 +75,7 @@ public class Group2Strategy implements Strategy{
       Iterator<Node> children = child_list.iterator();
       while(children.hasNext()){
         Node child = children.next();
-        Node alpha_child = alphabeta(child, depth - 1, -beta, -alpha);
+        Node alpha_child = alphabeta(child, depth - 1, -beta, -alpha, evaluate);
         alpha = - alpha_child.getF();
         if(beta <= alpha)
           return alpha_child;
@@ -66,21 +91,12 @@ public class Group2Strategy implements Strategy{
 
     @Override
     public Square chooseSquare(Board board) {
-        Square s = alphabeta(new Node(board), 4, Integer.MIN_VALUE, Integer.MAX_VALUE).getSquare();
-        //System.out.println(board.getPlayerSquareCounts());
-        return s;
+      Evaluator evaluate;
+      evaluate = new Evaluator(FunctionalUtils.coin_parity);
+      Square s = alphabeta(new Node(board), 3, Integer.MIN_VALUE, Integer.MAX_VALUE, evaluate).getSquare();
+      //System.out.println(board.getPlayerSquareCounts());
+      return s;
         
-    }
-    
-    public static Node evaluate(Node node){
-        
-        int coin_parity = 100 * ((node.getBoard().getPlayerSquareCounts().get(node.getPlayer()) -
-                node.getBoard().getPlayerSquareCounts().get(node.getOpponent()))/
-                (node.getBoard().getPlayerSquareCounts().get(node.getPlayer())+
-                node.getBoard().getPlayerSquareCounts().get(node.getOpponent())));
-        node.setF(coin_parity);
-        
-        return node;   
     }
     
     @Override
@@ -89,10 +105,7 @@ public class Group2Strategy implements Strategy{
         time=1000;
         unit=TimeUnit.MILLISECONDS;
     }    
-
-    
-
-    
+   
 }
 
 final class Node{
@@ -112,6 +125,10 @@ final class Node{
         this.player = node.getCurrentPlayer();
         this.opponent = node.getCurrentPlayer().opponent();
         this.f = Integer.MIN_VALUE;
+    }
+    
+    public void play(Square a){
+      node.play(a);
     }
     
     public Board getBoard(){
@@ -179,3 +196,4 @@ final class Memoizer<T, U> {
     return new Memoizer<T, U>().doMemoize(function);
   }
 }
+
