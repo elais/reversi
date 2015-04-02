@@ -18,54 +18,68 @@ import java.util.PriorityQueue;
 import edu.uab.cis.reversi.Square;
 import edu.uab.cis.reversi.Strategy;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 /**
  *
  * @author elais
  */
 public class Group2Strategy implements Strategy{
-    private Player maximizing_player;
-    public Node alphabeta(Node node, int depth, int alpha, int beta){
-
-        if(depth==0)
-          return evaluate(node);
-        
-        if(node.getBoard().getCurrentPossibleSquares().isEmpty()){
-          Node n = new Node(node.getBoard().pass());
-          node.addChild(n);
+    public static Node alphabeta(Node node, int depth, int alpha, int beta){
+      Node parent = node;
+      List<Node> child_list = new ArrayList();
+      if(depth==0)
+        return evaluate(node);
+      
+      if(parent.getBoard().getCurrentPossibleSquares().isEmpty()){
+        Node n = new Node(parent.getBoard().pass());
+        child_list.add(n);
+      } else{
+        Iterator<Square> it = parent.getBoard().getCurrentPossibleSquares().iterator();
+        while(it.hasNext()){
+          Square s = it.next();
+          Node n = new Node(parent.getBoard().play(s));
+          n.setSquare(s);
+          child_list.add(n);
         }
-        else {
-          for(Square s : node.getBoard().getCurrentPossibleSquares()) {
-            Node n = new Node(node.getBoard().play(s));
-            n.setSquare(s);
-            node.addChild(n);
-            alpha = - alphabeta(n, depth - 1, -beta, -alpha).getF();
-            
-            if(beta <= alpha)
-              break;
-            
-            if (alpha > node.getChildren().peek().getF()){
-             node.setSquare(n.getSquare());
-             node.getChildren().peek().setF(alpha);
-            }
-          }
+      }
+      Iterator<Node> children = child_list.iterator();
+      while(children.hasNext()){
+        Node child = children.next();
+        Node alpha_child = alphabeta(child, depth - 1, -beta, -alpha);
+        alpha = - alpha_child.getF();
+        if(beta <= alpha)
+          return alpha_child;
+        parent.addChild(child);
+        if (alpha > parent.getChildren().peek().getF()){
+          child.setF(alpha);
         }
-
-        return node;
+      }
+      parent.setF(parent.getChildren().peek().getF());
+      parent.setSquare(parent.getChildren().peek().getSquare());
+      return parent;
     }
-    
 
     @Override
     public Square chooseSquare(Board board) {
-        maximizing_player = board.getCurrentPlayer();
-        Square s = alphabeta(new Node(board), 3, Integer.MIN_VALUE, Integer.MAX_VALUE).getSquare();
+        Square s = alphabeta(new Node(board), 4, Integer.MIN_VALUE, Integer.MAX_VALUE).getSquare();
+        //System.out.println(board.getPlayerSquareCounts());
         return s;
         
     }
     
-    public Node evaluate(Node node){
-        node.setF(node.getBoard().getCurrentPossibleSquares().size());
+    public static Node evaluate(Node node){
+        
+        int coin_parity = 100 * ((node.getBoard().getPlayerSquareCounts().get(node.getPlayer()) -
+                node.getBoard().getPlayerSquareCounts().get(node.getOpponent()))/
+                (node.getBoard().getPlayerSquareCounts().get(node.getPlayer())+
+                node.getBoard().getPlayerSquareCounts().get(node.getOpponent())));
+        node.setF(coin_parity);
+        
         return node;   
     }
     
@@ -88,11 +102,16 @@ final class Node{
     private int h;
     private int f;
     private Square s;
+    private Player player;
+    private Player opponent;
     private Queue<Node> children;
     
     public Node(Board node){
         this.node = node;
         this.children = new PriorityQueue(20, nodeComparator);
+        this.player = node.getCurrentPlayer();
+        this.opponent = node.getCurrentPlayer().opponent();
+        this.f = Integer.MIN_VALUE;
     }
     
     public Board getBoard(){
@@ -119,6 +138,14 @@ final class Node{
         return s;
     }
     
+    public Player getPlayer(){
+      return player;
+    }
+    
+    public Player getOpponent(){
+      return opponent;
+    }
+    
     public Queue<Node> getChildren(){
         return children;
     }
@@ -136,4 +163,19 @@ final class Node{
             }
         }
     };
+}
+
+final class Memoizer<T, U> {
+
+  private final Map<T, U> cache = new ConcurrentHashMap<>();
+
+  private Memoizer() {}
+
+  private Function<T, U> doMemoize(final Function<T, U> function) {
+    return input -> cache.computeIfAbsent(input, function::apply);
+  }
+
+  public static <T, U> Function<T, U> memoize(final Function<T, U> function) {
+    return new Memoizer<T, U>().doMemoize(function);
+  }
 }
