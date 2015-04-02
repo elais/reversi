@@ -37,6 +37,11 @@ class FunctionalUtils {
               node.setF(coin_parity);		
           return node;
 	};
+        
+        static final UnaryOperator<Node> start_here = (final Node node) -> {
+          int yours = 0;
+          return node;
+        };
 }
 
 class Evaluator {
