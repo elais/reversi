@@ -76,17 +76,12 @@ class Evaluator {
 
 public class Group2Strategy implements Strategy{
   //private long startTime;
-  private Tuple alphaBeta(FiveTuple input) {
+  private Map<Integer, Node> zobrist;
+  private Tuple alphaBeta(Node node, int depth, double alpha, double beta, Evaluator evaluate) {
     
     
     // extract algorithm inputs from input tuple
-    Node best = input.node;
-    Node node = input.node;
-    int depth = input.depth;
-    double alpha = input.alpha;
-    double beta = input.beta;
-    Evaluator evaluate = input.evaluate;
-    
+    Node best = node;
     double bestResult = Double.NEGATIVE_INFINITY; //placeholder for highest score so far
     //if(System.nanoTime()  time - 100)
     
@@ -115,10 +110,7 @@ public class Group2Strategy implements Strategy{
     Iterator<Node> children = child_list.iterator();
     while (children.hasNext()) {
       Node child = children.next();
-      FiveTuple newInput; 
-      newInput = new FiveTuple(child, depth - 1, -beta, 
-              -alpha, evaluate);
-      Tuple alphaT = alphaBeta(newInput);
+      Tuple alphaT = alphaBeta(child, depth - 1, -beta, -alpha, evaluate);
       alpha = -alphaT.score;
       if(beta <= alpha) {
         //System.out.println(beta);
@@ -142,9 +134,9 @@ public class Group2Strategy implements Strategy{
     Evaluator evaluate = new Evaluator(FunctionalUtils.valid_parity); //choose an evaluation function
     
     //input tuple for algorithm, in a tuple for later hashing; values are immutable.
-    FiveTuple input = new FiveTuple(new Node(board), 4, Double.NEGATIVE_INFINITY, 
-            Double.POSITIVE_INFINITY, evaluate);
-    Square s = alphaBeta(input).node.getSquare(); //gets square from algorithm
+    zobrist = new HashMap();
+    Square s = alphaBeta(new Node(board), 4, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, evaluate)
+            .node.getSquare(); //gets square from algorithm
     return s;
   }
   public long time;
