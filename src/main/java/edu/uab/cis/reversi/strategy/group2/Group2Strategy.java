@@ -79,7 +79,8 @@ public class Group2Strategy implements Strategy{
   private Map<Integer, Node> zobrist;
   private Tuple alphaBeta(Node node, int depth, double alpha, double beta, Evaluator evaluate) {
     
-    
+    if(System.currentTimeMillis() - startTime > TimeUnit.MILLISECONDS.toMillis(time - 100))
+      depth = 0;
     // extract algorithm inputs from input tuple
     Node best = node;
     double bestResult = Double.NEGATIVE_INFINITY; //placeholder for highest score so far
@@ -127,7 +128,7 @@ public class Group2Strategy implements Strategy{
     return t;
   }
   
-
+  
   @Override
   public Square chooseSquare(Board board) {
     
@@ -135,12 +136,15 @@ public class Group2Strategy implements Strategy{
     
     //input tuple for algorithm, in a tuple for later hashing; values are immutable.
     zobrist = new HashMap();
-    Square s = alphaBeta(new Node(board), 4, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, evaluate)
+    startTime = System.currentTimeMillis();
+    Square s = alphaBeta(new Node(board), 5, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, evaluate)
             .node.getSquare(); //gets square from algorithm
+    System.out.println(s);
     return s;
   }
   public long time;
   public TimeUnit unit;
+  public long startTime;
   @Override
   public void setChooseSquareTimeLimit(long time, TimeUnit unit) {
 // by default, do nothing
