@@ -46,13 +46,12 @@ class FunctionalUtils {
   };
   
   static final ToDoubleFunction<Node> valid_moves = (final Node node) -> {
-    double valid_moves;
-    valid_moves = node.getBoard().getCurrentPossibleSquares().size();
-    return valid_moves;
+    double valid_moves1;
+    valid_moves1 = node.getBoard().getCurrentPossibleSquares().size();
+    return valid_moves1;
   };
   
   static final ToDoubleFunction<Node> valid_parity = (final Node node) -> {
-    double valid_parity;
     return coin_parity.applyAsDouble(node) + valid_moves.applyAsDouble(node);
   };
 }
@@ -79,7 +78,7 @@ public class Group2Strategy implements Strategy{
   private Map<Integer, Node> zobrist;
   private Tuple alphaBeta(Node node, int depth, double alpha, double beta, Evaluator evaluate) {
     
-    if(System.currentTimeMillis() - startTime > TimeUnit.MILLISECONDS.toMillis(time - 100))
+    if(System.currentTimeMillis() - startTime > TimeUnit.MILLISECONDS.toMillis(time - (time - 10L)))
       depth = 0;
     // extract algorithm inputs from input tuple
     Node best = node;
@@ -112,15 +111,14 @@ public class Group2Strategy implements Strategy{
     while (children.hasNext()) {
       Node child = children.next();
       Tuple alphaT = alphaBeta(child, depth - 1, -beta, -alpha, evaluate);
-      alpha = -alphaT.score;
-      if(beta <= alpha) {
-        //System.out.println(beta);
-        return alphaT;
-      }
+      alpha = - alphaT.score;
       if(alpha > bestResult){
         //System.out.println("here");
         bestResult = alpha;
         best = child;
+      }
+      if(beta <= alpha){
+        return new Tuple(child, alpha);
       }
     }
     //System.out.println(best.getSquare());
@@ -139,17 +137,18 @@ public class Group2Strategy implements Strategy{
     startTime = System.currentTimeMillis();
     Square s = alphaBeta(new Node(board), 5, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, evaluate)
             .node.getSquare(); //gets square from algorithm
-    System.out.println(s);
+    //System.out.println(s);
     return s;
   }
+  
   public long time;
   public TimeUnit unit;
   public long startTime;
   @Override
-  public void setChooseSquareTimeLimit(long time, TimeUnit unit) {
+  public void setChooseSquareTimeLimit(long t, TimeUnit u) {
 // by default, do nothing
-    this.time = 1000;
-    this.unit = TimeUnit.MILLISECONDS;
+    this.time = t;
+    this.unit = u;
   }
   
   private static final Map<FiveTuple,Tuple> memo = new HashMap<>();
