@@ -77,7 +77,8 @@ class Heuristics {
     return new Random(1337).nextDouble();
   };
   
-  //this heuristic measures the player's relative mobility
+  //this heuristic measures the player's relative mobility, when using this
+  //be sure to change the node calculated at depth zero to two nodes;
   static final ToDoubleBiFunction<Node, Node> mobility = (final Node node1, final Node node2) -> {
     int result;
     int playerMoves = node1.getBoard().getCurrentPossibleSquares().size();
@@ -147,12 +148,11 @@ public class Group2Strategy implements Strategy{
     //if((System.currentTimeMillis() - startTime > TimeUnit.MILLISECONDS.toMillis(time - 990L)) 
     if(node.getBoard().isComplete()){
       depth = 0;
-      return new Tuple(node, evaluate.exec(node), child_list);
+      return new Tuple(node, evaluate.exec(node, new Node(node.play(node.getSquare()))), child_list);
     }
     
     if (depth == 0) {
-      Tuple t = new Tuple(node, evaluate.exec(node), child_list);
-      return t;
+      return new Tuple(node, evaluate.exec(node, new Node(node.play(node.getSquare()))), child_list);
     }
     
     Tuple best = new Tuple(node, Double.NEGATIVE_INFINITY, child_list);
