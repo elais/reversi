@@ -38,18 +38,19 @@ public class Group2Strategy implements Strategy{
   //private long startTime;
   
   //This is the alpha beta pruning algorithm
-  private Leaf alphaBeta(Leaf leaf, int depth, double alpha, double beta, Evaluator evaluate) {
+  public Leaf alphaBeta(Leaf leaf, int depth, double alpha, double beta, Evaluator evaluate) {
     //Transposition table
     double alphaOriginal = alpha;
     List<Leaf> child_list = new ArrayList();
+    
 
     //transposition table look up, node is the lookup key
     TranspositionTable ttEntry = table.get(leaf.node);
-    //System.out.println(ttEntry);
     if (ttEntry != null && ttEntry.depth >= depth){
-      if(ttEntry.flag == TranspositionTable.Bound.EXACT)
+      if(ttEntry.flag == TranspositionTable.Bound.EXACT){
+        //System.out.print("here");
         return new Leaf(ttEntry.node, ttEntry.value, leaf.children);
-      else if(ttEntry.flag == TranspositionTable.Bound.LOWERBOUND)
+      } else if(ttEntry.flag == TranspositionTable.Bound.LOWERBOUND)
         alpha = Math.max(alpha, ttEntry.value);
       else if(ttEntry.flag == TranspositionTable.Bound.UPPERBOUND)
         beta = Math.min(beta, ttEntry.value);
@@ -59,9 +60,10 @@ public class Group2Strategy implements Strategy{
     
         
     
-    
+
+
     if(leaf.node.getBoard().isComplete() 
-            || (System.nanoTime() - startTime) > TimeUnit.MILLISECONDS.toNanos(time - 10L)){ 
+            || (System.nanoTime() - startTime) > TimeUnit.MILLISECONDS.toNanos(time - 100L)){ 
         return new Leaf(leaf.node, evaluate.exec(leaf.node), child_list);
       }
     
@@ -151,23 +153,26 @@ public class Group2Strategy implements Strategy{
 //    return result;
 //  }
   private Map<Node, TranspositionTable> table;
+  private final int infinity = Integer.MAX_VALUE;
+  private int currentDepth = 0;
   @Override
   public Square chooseSquare(Board board){
     
-    //The reversi overlord calls this function
-    ExecutorService executor = Executors.newFixedThreadPool(1);
-    Evaluator evaluate = new Evaluator(Heuristics.valid_parity);
-    table = new HashMap<>(); // transpoisition table  
+    Evaluator evaluate;
+    evaluate = new Evaluator(Heuristics.valid_moves);
+    table = new HashMap<>(); // transposition table  
     startTime = System.nanoTime();
     //int count = 0;
     Leaf root = new Leaf(new Node(board), Double.NEGATIVE_INFINITY, new ArrayList());
-    for(int i = 0; i < 300; i++){
-      //System.out.println(i);
+    for(int i = 0; i <= 8; i++){
       root = alphaBeta(root, i, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, evaluate);
-      if(((System.nanoTime() - startTime) > TimeUnit.MILLISECONDS.toNanos(time - 10L)))
+      if(((System.nanoTime() - startTime) > TimeUnit.MILLISECONDS.toNanos(time - 100L)))
+        //System.out.println(i);
         break;
     }
-    //System.out.println(count);
+    //System.out.println(table.size());
+    //System.out.println(root.node.getSquare());
+    //System.out.println(currentDepth);
     return root.node.getSquare();
   }
 
@@ -183,18 +188,6 @@ public class Group2Strategy implements Strategy{
   
 }
 
-class Foo implements Runnable {
-    private volatile boolean killed = false;
-
-    public void run() {
-        while (!killed) {
-            try { doOnce(); } catch (InterruptedException ex) { killed = true; }
-        }
-    }
-
-    public void kill() { killed = true; }
-    private void doOnce() throws InterruptedException { /* .. */ }
-}
 
 final class Memoizer<T, U> {
 
