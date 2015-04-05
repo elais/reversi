@@ -45,6 +45,8 @@ public class Group2Strategy implements Strategy{
     
 
     //transposition table look up, node is the lookup key
+    //this speeds up search a little by eliminating the need to do needless
+    //calculations on nodes already visited. 
     TranspositionTable ttEntry = table.get(leaf.node);
     if (ttEntry != null && ttEntry.depth >= depth){
       if(ttEntry.flag == TranspositionTable.Bound.EXACT){
@@ -61,7 +63,10 @@ public class Group2Strategy implements Strategy{
         
     
 
-
+    //these are checks put in to place to make sure we have not run out of time
+    //or that the search has now reached its max depth
+    //on reaching the time limit the search cuts off and calculates the nodes at
+    //the given depth
     if(leaf.node.getBoard().isComplete() 
             || (System.nanoTime() - startTime) > TimeUnit.MILLISECONDS.toNanos(time - 100L)){ 
         return new Leaf(leaf.node, evaluate.exec(leaf.node), child_list);
@@ -76,6 +81,8 @@ public class Group2Strategy implements Strategy{
     // returns value of node in final depth
 
     
+    //here is where we define the node's children, first it checks to see if the node
+    //has children, if not it creates them as needed (barring this is a game ending state etc
     if(leaf.children.isEmpty()){
       if (leaf.node.getBoard().getCurrentPossibleSquares().isEmpty()) {
         Node n = new Node(leaf.node.getBoard().pass());
@@ -159,12 +166,12 @@ public class Group2Strategy implements Strategy{
   public Square chooseSquare(Board board){
     
     Evaluator evaluate;
-    evaluate = new Evaluator(Heuristics.valid_moves);
+    evaluate = new Evaluator(Heuristics.mobility);
     table = new HashMap<>(); // transposition table  
     startTime = System.nanoTime();
     //int count = 0;
     Leaf root = new Leaf(new Node(board), Double.NEGATIVE_INFINITY, new ArrayList());
-    for(int i = 0; i <= 8; i++){
+    for(int i = 0; i <= 10; i++){
       root = alphaBeta(root, i, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, evaluate);
       if(((System.nanoTime() - startTime) > TimeUnit.MILLISECONDS.toNanos(time - 100L)))
         //System.out.println(i);
