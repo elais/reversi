@@ -44,7 +44,10 @@ public class Group2Strategy implements Strategy{
     //or that the search has now reached its max depth
     //on reaching the time limit the search cuts off and calculates the nodes at
     //the given depth
- 
+    if((System.nanoTime() - startTime) > TimeUnit.MILLISECONDS.toNanos(time - 200L)){
+        //System.out.println("here");
+        return null;
+    }
     
 
     //Transposition table
@@ -56,13 +59,13 @@ public class Group2Strategy implements Strategy{
     if (ttEntry != null && ttEntry.depth >= depth){
       if(ttEntry.flag == TranspositionTable.Bound.EXACT){
         //System.out.print("here");
-        return new Leaf(leaf.node, ttEntry.value, leaf.children);
+        return new Leaf(leaf.node, ttEntry.value, ttEntry.list);
       } else if(ttEntry.flag == TranspositionTable.Bound.LOWERBOUND)
         alpha = Math.max(alpha, ttEntry.value);
       else if(ttEntry.flag == TranspositionTable.Bound.UPPERBOUND)
         beta = Math.min(beta, ttEntry.value);
       if(alpha >= beta)
-        return new Leaf(leaf.node, ttEntry.value, leaf.children);
+        return new Leaf(leaf.node, ttEntry.value, ttEntry.list);
     }
     List<Leaf> child_list = new ArrayList();
     
@@ -80,44 +83,41 @@ public class Group2Strategy implements Strategy{
     double bestValue = Double.NEGATIVE_INFINITY; //placeholder for highest score so far
     // returns value of node in final depth
 
-   if((System.nanoTime() - startTime) > TimeUnit.MILLISECONDS.toNanos(time - 100L)){
+   if((System.nanoTime() - startTime) > TimeUnit.MILLISECONDS.toNanos(time - 200L)){
         //System.out.println("here");
         return null;
      }    
     //here is where we define the node's children, first it checks to see if the node
     //has children, if not it creates them as needed (barring this is a game ending state etc
-    if(leaf.children.isEmpty()){
-      if (leaf.node.getBoard().getCurrentPossibleSquares().isEmpty()) {
-        Node n = new Node(leaf.node.getBoard().pass());
-        n.setSquare(Square.PASS);
-        child_list.add(new Leaf(n, bestValue, new ArrayList()) );
-      } else{
-        Iterator<Square> it = leaf.node.getBoard().getCurrentPossibleSquares().iterator();
-        while (it.hasNext()) {
-          Square s = it.next();
-          Node n = new Node(leaf.node.play(s));
-          n.setSquare(s);
-          child_list.add(new Leaf(n, bestValue, new ArrayList()));
-        }
+
+    if (leaf.node.getBoard().getCurrentPossibleSquares().isEmpty()) {
+      Node n = new Node(leaf.node.getBoard().pass());
+      n.setSquare(Square.PASS);
+      child_list.add(new Leaf(n, bestValue, new ArrayList()) );
+    } else{
+      Iterator<Square> it = leaf.node.getBoard().getCurrentPossibleSquares().iterator();
+      while (it.hasNext()) {
+        Square s = it.next();
+        Node n = new Node(leaf.node.play(s));
+        n.setSquare(s);
+        child_list.add(new Leaf(n, Heuristics.frontiers.applyAsDouble(n), new ArrayList()));
       }
-    } else {
-      child_list = leaf.children;
     }
-    if ((System.nanoTime() - startTime) > TimeUnit.MILLISECONDS.toNanos(time - 100L)) {
+    if ((System.nanoTime() - startTime) > TimeUnit.MILLISECONDS.toNanos(time - 200L)) {
       //System.out.println("here");
       return null;
     }
     //truthfully, this is the meat of the algorithm
     //importantly, after all of the child nodes are evaluated they
     //are sorted
+    child_list.sort(Comparator.comparing(e -> e.score));
     Iterator<Leaf> children = child_list.iterator();
     while (children.hasNext()) {
       Leaf child = children.next();
       child.score = -alphaBeta(child, depth - 1, -beta, -alpha, evaluate).score;
       bestValue = Math.max(bestValue, child.score);
       if(bestValue == child.score)
-        best = new ArrayList();
-        best.add(child);
+        best.add(0, child);
       alpha = Math.max(alpha, child.score);
       if(alpha >= beta){
         //child_list.sort(Comparator.comparing((Leaf e) -> e.score).reversed());
@@ -125,14 +125,14 @@ public class Group2Strategy implements Strategy{
         //return newLeaf;
         break;
       }
-    }
-      
-    if ((System.nanoTime() - startTime) > TimeUnit.MILLISECONDS.toNanos(time - 100L)) {
+      if ((System.nanoTime() - startTime) > TimeUnit.MILLISECONDS.toNanos(time - 200L)) {
       //System.out.println("here");
       return null;
-    }  
+    }
+    }
+    Leaf winner = new Leaf(leaf.node, bestValue, best);
     //Transposition Table store; node is lookup key
-    TranspositionTable newEntry = new TranspositionTable(depth, bestValue);
+    TranspositionTable newEntry = new TranspositionTable(depth, bestValue, best);
     if(bestValue <= alphaOriginal)
       newEntry.flag = TranspositionTable.Bound.UPPERBOUND;
     else if(bestValue >= beta)
@@ -141,9 +141,11 @@ public class Group2Strategy implements Strategy{
       newEntry.flag = TranspositionTable.Bound.EXACT;
     table.put(leaf.node.getBoard().hashCode(), newEntry);
     //System.out.println(table.get(leaf.node));
-    
+    if ((System.nanoTime() - startTime) > TimeUnit.MILLISECONDS.toNanos(time - 200L)) {
+      //System.out.println("here");
+      return null;
+    }
     //return best valued node.
-    Leaf winner = new Leaf(leaf.node, bestValue, best);
     return winner;
   }
   
@@ -159,7 +161,7 @@ public class Group2Strategy implements Strategy{
 //      else
 //        beta = g;
 //      result = alphaBeta(node, depth, beta - 1, beta, evaluate);
-//      g = result.score;
+//      g = result.score;`
 //      if(g < beta)
 //        upperBound = g;
 //      else
@@ -182,13 +184,12 @@ public class Group2Strategy implements Strategy{
     Leaf pretender;
     Leaf root = new Leaf(new Node(board), Double.NEGATIVE_INFINITY, new ArrayList());
     pretender = root;
-    for(int maxDepth = 2; maxDepth < 4; maxDepth++) {
+    for(int maxDepth = 2; maxDepth < 5; maxDepth++) {
       pretender = alphaBeta(root, maxDepth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, evaluate);
-      if(((System.nanoTime() - startTime) > TimeUnit.MILLISECONDS.toNanos(time - 100L))){
-        break; 
+      if(((System.nanoTime() - startTime) > TimeUnit.MILLISECONDS.toNanos(time - 200L))){
+        break;
       }
-      if(pretender != null)
-        root = pretender;
+      root = pretender;
     }
     //System.out.println(root.children.get(0).score);
     //System.out.println(root.children.get(1).score);

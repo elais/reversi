@@ -109,12 +109,13 @@ class Leaf{
 class TranspositionTable{
   public int depth;
   public double value;
-  public Node node;
+  public List<Leaf> list;
   public enum Bound{UPPERBOUND, LOWERBOUND, EXACT};
   public Bound flag;
   
-  public TranspositionTable(int d, double s){
+  public TranspositionTable(int d, double s, List l){
     this.depth = d;
     this.value = s;
+    this.list = l;
   }  
 }
