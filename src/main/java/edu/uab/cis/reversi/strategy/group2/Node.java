@@ -113,9 +113,8 @@ class TranspositionTable{
   public enum Bound{UPPERBOUND, LOWERBOUND, EXACT};
   public Bound flag;
   
-  public TranspositionTable(int d, double s, Node n){
+  public TranspositionTable(int d, double s){
     this.depth = d;
     this.value = s;
-    this.node = n;
   }  
 }
