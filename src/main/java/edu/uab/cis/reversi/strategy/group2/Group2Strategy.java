@@ -109,7 +109,7 @@ public class Group2Strategy implements Strategy{
     //truthfully, this is the meat of the algorithm
     //importantly, after all of the child nodes are evaluated they
     //are sorted
-    child_list.sort(Comparator.comparing(e -> e.score));
+    child_list.sort(Comparator.comparing((Leaf e) -> e.score).reversed());
     Iterator<Leaf> children = child_list.iterator();
     while (children.hasNext()) {
       Leaf child = children.next();
@@ -176,6 +176,7 @@ public class Group2Strategy implements Strategy{
     evaluate = new Evaluator(Heuristics.ex_wife);
     transpositionTable = new HashMap<>(); // transposition table  
     startTime = System.nanoTime();
+    buffer = unit.toMillis(time - (time * (1L/20L)));
     //maxDepth = 2;
     Leaf pretender;
     Leaf root = new Leaf(new Node(board), Double.NEGATIVE_INFINITY, new ArrayList());
@@ -197,7 +198,7 @@ public class Group2Strategy implements Strategy{
   public long time;
   public TimeUnit unit;
   public long startTime;
-  public long buffer = time * (1L/20L);
+  public long buffer;
   @Override 
   public void setChooseSquareTimeLimit(long t, TimeUnit u) {
 // by default, do nothing
