@@ -44,7 +44,7 @@ public class Group2Strategy implements Strategy{
     //or that the search has now reached its max depth
     //on reaching the time limit the search cuts off and calculates the nodes at
     //the given depth
-    if((System.nanoTime() - startTime) > TimeUnit.MILLISECONDS.toNanos(time - 200L)){
+    if((System.nanoTime() - startTime) > TimeUnit.MILLISECONDS.toNanos(time - buffer)){
         //System.out.println("here");
         return null;
     }
@@ -55,7 +55,7 @@ public class Group2Strategy implements Strategy{
     //transposition table look up, node is the lookup key
     //this speeds up search a little by eliminating the need to do needless
     //calculations on nodes already visited. 
-    TranspositionTable ttEntry = table.get(leaf.node.getBoard().hashCode());
+    TranspositionTable ttEntry = transpositionTable.get(leaf.node.getBoard().hashCode());
     if (ttEntry != null && ttEntry.depth >= depth){
       if(ttEntry.flag == TranspositionTable.Bound.EXACT){
         //System.out.print("here");
@@ -73,7 +73,7 @@ public class Group2Strategy implements Strategy{
       if(leaf.node.getBoard().getWinner() == leaf.node.getPlayer())
         return new Leaf(leaf.node, Double.POSITIVE_INFINITY, child_list);
       else
-        return new Leaf(leaf.node,Double.NEGATIVE_INFINITY, child_list);
+        return new Leaf(leaf.node, Double.NEGATIVE_INFINITY, child_list);
     }
     if (depth == 0) {
       return new Leaf(leaf.node, evaluate.exec(leaf), child_list);
@@ -82,11 +82,10 @@ public class Group2Strategy implements Strategy{
     best.add(leaf);
     double bestValue = Double.NEGATIVE_INFINITY; //placeholder for highest score so far
     // returns value of node in final depth
-
-   if((System.nanoTime() - startTime) > TimeUnit.MILLISECONDS.toNanos(time - 200L)){
+    if((System.nanoTime() - startTime) > TimeUnit.MILLISECONDS.toNanos(time - buffer)){
         //System.out.println("here");
         return null;
-     }    
+    }   
     //here is where we define the node's children, first it checks to see if the node
     //has children, if not it creates them as needed (barring this is a game ending state etc
 
@@ -100,12 +99,12 @@ public class Group2Strategy implements Strategy{
         Square s = it.next();
         Node n = new Node(leaf.node.play(s));
         n.setSquare(s);
-        child_list.add(new Leaf(n, Heuristics.frontiers.applyAsDouble(n), new ArrayList()));
+        child_list.add(new Leaf(n, Heuristics.corner_closeness.applyAsDouble(n), new ArrayList()));
       }
     }
-    if ((System.nanoTime() - startTime) > TimeUnit.MILLISECONDS.toNanos(time - 200L)) {
-      //System.out.println("here");
-      return null;
+    if((System.nanoTime() - startTime) > TimeUnit.MILLISECONDS.toNanos(time - buffer)){
+        //System.out.println("here");
+        return null;
     }
     //truthfully, this is the meat of the algorithm
     //importantly, after all of the child nodes are evaluated they
@@ -120,15 +119,12 @@ public class Group2Strategy implements Strategy{
         best.add(0, child);
       alpha = Math.max(alpha, child.score);
       if(alpha >= beta){
-        //child_list.sort(Comparator.comparing((Leaf e) -> e.score).reversed());
-        //Leaf newLeaf = new Leaf(alphaT.node, beta, alphaT.children);
-        //return newLeaf;
         break;
       }
-      if ((System.nanoTime() - startTime) > TimeUnit.MILLISECONDS.toNanos(time - 200L)) {
-      //System.out.println("here");
-      return null;
-    }
+      if((System.nanoTime() - startTime) > TimeUnit.MILLISECONDS.toNanos(time - buffer)){
+        //System.out.println("here");
+        return null;
+      }
     }
     Leaf winner = new Leaf(leaf.node, bestValue, best);
     //Transposition Table store; node is lookup key
@@ -139,11 +135,11 @@ public class Group2Strategy implements Strategy{
       newEntry.flag = TranspositionTable.Bound.LOWERBOUND;
     else
       newEntry.flag = TranspositionTable.Bound.EXACT;
-    table.put(leaf.node.getBoard().hashCode(), newEntry);
+    transpositionTable.put(leaf.node.getBoard().hashCode(), newEntry);
     //System.out.println(table.get(leaf.node));
-    if ((System.nanoTime() - startTime) > TimeUnit.MILLISECONDS.toNanos(time - 200L)) {
-      //System.out.println("here");
-      return null;
+    if((System.nanoTime() - startTime) > TimeUnit.MILLISECONDS.toNanos(time - buffer)){
+        //System.out.println("here");
+        return null;
     }
     //return best valued node.
     return winner;
@@ -169,7 +165,7 @@ public class Group2Strategy implements Strategy{
 //    }
 //    return result;
 //  }
-  private Map<Integer, TranspositionTable> table;
+  private Map<Integer, TranspositionTable> transpositionTable;
   private final int infinity = Integer.MAX_VALUE;
   private int currentDepth = 0;
   //private int maxDepth;
@@ -178,7 +174,7 @@ public class Group2Strategy implements Strategy{
     
     Evaluator evaluate;
     evaluate = new Evaluator(Heuristics.motherfucker);
-    table = new HashMap<>(); // transposition table  
+    transpositionTable = new HashMap<>(); // transposition table  
     startTime = System.nanoTime();
     //maxDepth = 2;
     Leaf pretender;
@@ -186,8 +182,9 @@ public class Group2Strategy implements Strategy{
     pretender = root;
     for(int maxDepth = 2; maxDepth < 5; maxDepth++) {
       pretender = alphaBeta(root, maxDepth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, evaluate);
-      if(((System.nanoTime() - startTime) > TimeUnit.MILLISECONDS.toNanos(time - 200L))){
-        break;
+      if ((System.nanoTime() - startTime) > TimeUnit.MILLISECONDS.toNanos(time - buffer)) {
+        //System.out.println("here");
+        return null;
       }
       root = pretender;
     }
@@ -200,6 +197,7 @@ public class Group2Strategy implements Strategy{
   public long time;
   public TimeUnit unit;
   public long startTime;
+  public long buffer = time * (1L/20L);
   @Override 
   public void setChooseSquareTimeLimit(long t, TimeUnit u) {
 // by default, do nothing
