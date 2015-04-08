@@ -15,6 +15,7 @@ import edu.uab.cis.reversi.strategy.group2.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import static java.util.Comparator.reverseOrder;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -44,7 +45,7 @@ public class Group2Strategy implements Strategy{
     //or that the search has now reached its max depth
     //on reaching the time limit the search cuts off and calculates the nodes at
     //the given depth
-    if((System.nanoTime() - startTime) > TimeUnit.MILLISECONDS.toNanos(time - buffer)){
+    if((System.nanoTime() - startTime) > buffer){
         //System.out.println("here");
         return null;
     }
@@ -68,7 +69,6 @@ public class Group2Strategy implements Strategy{
         return new Leaf(leaf.node, ttEntry.value, ttEntry.list);
     }
     List<Leaf> child_list = new ArrayList();
-    
     if(leaf.node.getBoard().isComplete()){
       if(leaf.node.getBoard().getWinner() == leaf.node.getPlayer())
         return new Leaf(leaf.node, Double.POSITIVE_INFINITY, child_list);
@@ -82,7 +82,7 @@ public class Group2Strategy implements Strategy{
     best.add(leaf);
     double bestValue = Double.NEGATIVE_INFINITY; //placeholder for highest score so far
     // returns value of node in final depth
-    if((System.nanoTime() - startTime) > TimeUnit.MILLISECONDS.toNanos(time - buffer)){
+    if((System.nanoTime() - startTime) > buffer){
         //System.out.println("here");
         return null;
     }   
@@ -92,24 +92,25 @@ public class Group2Strategy implements Strategy{
     if (leaf.node.getBoard().getCurrentPossibleSquares().isEmpty()) {
       Node n = new Node(leaf.node.getBoard().pass());
       n.setSquare(Square.PASS);
-      child_list.add(new Leaf(n, bestValue, new ArrayList()) );
+      child_list.add(new Leaf(n, bestValue, child_list) );
     } else{
       Iterator<Square> it = leaf.node.getBoard().getCurrentPossibleSquares().iterator();
       while (it.hasNext()) {
         Square s = it.next();
         Node n = new Node(leaf.node.play(s));
         n.setSquare(s);
-        child_list.add(new Leaf(n, Heuristics.corner_closeness.applyAsDouble(n), new ArrayList()));
+        Leaf child = new Leaf(n, Heuristics.frontiers.applyAsDouble(n), child_list);
+        child_list.add(child);
       }
+      child_list.sort(Comparator.comparing((Leaf e) -> e.score).reversed());
     }
-    if((System.nanoTime() - startTime) > TimeUnit.MILLISECONDS.toNanos(time - buffer)){
+    if((System.nanoTime() - startTime) > buffer){
         //System.out.println("here");
         return null;
     }
     //truthfully, this is the meat of the algorithm
     //importantly, after all of the child nodes are evaluated they
     //are sorted
-    child_list.sort(Comparator.comparing((Leaf e) -> e.score).reversed());
     Iterator<Leaf> children = child_list.iterator();
     while (children.hasNext()) {
       Leaf child = children.next();
@@ -121,7 +122,7 @@ public class Group2Strategy implements Strategy{
       if(alpha >= beta){
         break;
       }
-      if((System.nanoTime() - startTime) > TimeUnit.MILLISECONDS.toNanos(time - buffer)){
+      if((System.nanoTime() - startTime) > buffer){
         //System.out.println("here");
         return null;
       }
@@ -137,34 +138,14 @@ public class Group2Strategy implements Strategy{
       newEntry.flag = TranspositionTable.Bound.EXACT;
     transpositionTable.put(leaf.node.getBoard().hashCode(), newEntry);
     //System.out.println(table.get(leaf.node));
-    if((System.nanoTime() - startTime) > TimeUnit.MILLISECONDS.toNanos(time - buffer)){
+    if((System.nanoTime() - startTime) > buffer){
         //System.out.println("here");
         return null;
     }
     //return best valued node.
     return winner;
   }
-  
-//  private Leaf MTDf(Node node, int depth, double f, Evaluator evaluate){
-//    double g = f;
-//    double upperBound = Double.POSITIVE_INFINITY;
-//    double lowerBound = Double.NEGATIVE_INFINITY;
-//    double beta;
-//    Leaf result = new Leaf(node, 0.0);
-//    while(lowerBound < upperBound){
-//      if(g == lowerBound)
-//        beta = g + 1;
-//      else
-//        beta = g;
-//      result = alphaBeta(node, depth, beta - 1, beta, evaluate);
-//      g = result.score;`
-//      if(g < beta)
-//        upperBound = g;
-//      else
-//        lowerBound = g;
-//    }
-//    return result;
-//  }
+
   private Map<Integer, TranspositionTable> transpositionTable;
   private final int infinity = Integer.MAX_VALUE;
   private int currentDepth = 0;
@@ -176,14 +157,13 @@ public class Group2Strategy implements Strategy{
     evaluate = new Evaluator(Heuristics.ex_wife);
     transpositionTable = new HashMap<>(); // transposition table  
     startTime = System.nanoTime();
-    buffer = unit.toMillis(time - (time * (1L/20L)));
+    buffer = unit.toNanos(time - (time * (1L/10L)));
     //maxDepth = 2;
     Leaf pretender;
     Leaf root = new Leaf(new Node(board), Double.NEGATIVE_INFINITY, new ArrayList());
-    pretender = root;
-    for(int maxDepth = 2; maxDepth < 5; maxDepth++) {
+    for(int maxDepth = 1; maxDepth < 4; maxDepth++) {
       pretender = alphaBeta(root, maxDepth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, evaluate);
-      if ((System.nanoTime() - startTime) > TimeUnit.MILLISECONDS.toNanos(time - buffer)) {
+      if ((System.nanoTime() - startTime) > buffer) {
         //System.out.println("here");
         return null;
       }
