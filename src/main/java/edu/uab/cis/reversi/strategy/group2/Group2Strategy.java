@@ -173,7 +173,7 @@ public class Group2Strategy implements Strategy{
   public Square chooseSquare(Board board){
     
     Evaluator evaluate;
-    evaluate = new Evaluator(Heuristics.motherfucker);
+    evaluate = new Evaluator(Heuristics.ex_wife);
     transpositionTable = new HashMap<>(); // transposition table  
     startTime = System.nanoTime();
     //maxDepth = 2;
