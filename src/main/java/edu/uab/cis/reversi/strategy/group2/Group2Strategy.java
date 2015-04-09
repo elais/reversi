@@ -38,22 +38,22 @@ import java.util.function.ToDoubleFunction;
 import java.util.function.ToDoubleBiFunction;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 /**
  *
  * @author elais
  */
 
-
 public class Group2Strategy implements Strategy {
   //private long startTime;
-  
+
   //This is the alpha beta pruning algorithm
   public Leaf alphaBeta(Leaf leaf, int depth, double alpha, double beta, Evaluator evaluate, boolean timeOut) {
     //these are checks put in to place to make sure we have not run out of time
     //or that the search has now reached its max depth
     //on reaching the time limit the search cuts off and calculates the nodes at
     //the given depth
-    if(timeOut){
+    if (timeOut) {
       return new Leaf(null, Double.NaN, null);
     }
 
@@ -64,16 +64,18 @@ public class Group2Strategy implements Strategy {
     //this speeds up search a little by eliminating the need to do needless
     //calculations on nodes already visited. 
     TranspositionTable ttEntry = transpositionTable.get(leaf.node.getBoard().hashCode());
-    if (ttEntry != null && ttEntry.depth >= depth){
-      if(ttEntry.flag == TranspositionTable.Bound.EXACT){
+    if (ttEntry != null && ttEntry.depth >= depth) {
+      if (ttEntry.flag == TranspositionTable.Bound.EXACT) {
         //System.out.print("here");
         return new Leaf(leaf.node, ttEntry.value, ttEntry.list);
-      } else if(ttEntry.flag == TranspositionTable.Bound.LOWERBOUND)
+      } else if (ttEntry.flag == TranspositionTable.Bound.LOWERBOUND) {
         alpha = Math.max(alpha, ttEntry.value);
-      else if(ttEntry.flag == TranspositionTable.Bound.UPPERBOUND)
+      } else if (ttEntry.flag == TranspositionTable.Bound.UPPERBOUND) {
         beta = Math.min(beta, ttEntry.value);
-      if(alpha >= beta)
+      }
+      if (alpha >= beta) {
         return new Leaf(leaf.node, ttEntry.value, ttEntry.list);
+      }
     }
 
     List<Leaf> child_list = new ArrayList();
@@ -85,7 +87,6 @@ public class Group2Strategy implements Strategy {
       }
     }
 
-
     if (depth == 0) {
       return new Leaf(leaf.node, evaluate.exec(leaf), child_list);
     }
@@ -93,16 +94,15 @@ public class Group2Strategy implements Strategy {
     best.add(leaf);
     double bestValue = Double.NEGATIVE_INFINITY; //placeholder for highest score so far
     // returns value of node in final depth
-  
+
     //here is where we define the node's children, first it checks to see if the node
     //has children, if not it creates them as needed (barring this is a game ending state etc
     //System.out.println("here");
-
     if (leaf.node.getBoard().getCurrentPossibleSquares().isEmpty()) {
       Node n = new Node(leaf.node.getBoard().pass());
       n.setSquare(Square.PASS);
-      child_list.add(new Leaf(n, bestValue, child_list) );
-    } else{
+      child_list.add(new Leaf(n, bestValue, child_list));
+    } else {
       Iterator<Square> it = leaf.node.getBoard().getCurrentPossibleSquares().iterator();
       while (it.hasNext()) {
         Square s = it.next();
@@ -119,29 +119,34 @@ public class Group2Strategy implements Strategy {
     //truthfully, this is the meat of the algorithm
     //importantly, after all of the child nodes are evaluated they
     //are sorted
-    for(Leaf child: child_list) {
+    for (Leaf child : child_list) {
+      if (timeOut) {
+        return new Leaf(null, Double.NaN, null);
+      }      
       child.score = -alphaBeta(child, depth - 1, -beta, -alpha, evaluate, timeOut).score;
-      if(timeOut) {
+      if (timeOut) {
         return new Leaf(null, Double.NaN, null);
       }
       bestValue = Math.max(bestValue, child.score);
-      if(bestValue == child.score)
+      if (bestValue == child.score) {
         best.add(0, child);
+      }
       alpha = Math.max(alpha, child.score);
-      if(alpha >= beta){
+      if (alpha >= beta) {
         break;
       }
     }
-    
+
     Leaf winner = new Leaf(leaf.node, bestValue, best);
     //Transposition Table store; node is lookup key
     TranspositionTable newEntry = new TranspositionTable(depth, bestValue, best);
-    if(bestValue <= alphaOriginal)
+    if (bestValue <= alphaOriginal) {
       newEntry.flag = TranspositionTable.Bound.UPPERBOUND;
-    else if(bestValue >= beta)
+    } else if (bestValue >= beta) {
       newEntry.flag = TranspositionTable.Bound.LOWERBOUND;
-    else
+    } else {
       newEntry.flag = TranspositionTable.Bound.EXACT;
+    }
     transpositionTable.put(leaf.node.getBoard().hashCode(), newEntry);
     //System.out.println(table.get(leaf.node));
     //return best valued node.
@@ -159,67 +164,62 @@ public class Group2Strategy implements Strategy {
   //private int maxDepth;
   @Override
   public Square chooseSquare(Board board) {
-    root  = new Leaf(new Node(board), Double.NEGATIVE_INFINITY, new ArrayList());
+    root = new Leaf(new Node(board), Double.NEGATIVE_INFINITY, new ArrayList());
     transpositionTable = new ConcurrentHashMap();
     IterativeDeepening iddfs = new IterativeDeepening();
-    task = new Thread(iddfs);
-    timer = new Timer("timer", true);
-    task.start();
-    timer.schedule(new Terminator(), unit.toMillis(time - (time * 1L/2L)));
+    ExecutorService service = Executors.newFixedThreadPool(1);
+    service.submit(iddfs);
+    try {
+      boolean isFinished = service.awaitTermination(time - (time * 1/5), unit);
+      if(!isFinished){
+        iddfs.done();
+        root = iddfs.getResult();
+      }
+    } catch (InterruptedException ex) {
+      root = iddfs.getResult();
+    }
     System.out.println(root.children.get(0).node.getSquare());
     return root.children.get(0).node.getSquare();
-    
   }
-  private Thread task;
-  private Timer timer;
-  class IterativeDeepening implements Runnable{
 
-    private Evaluator evaluate = new Evaluator(Heuristics.ex_wife);
-    private Thread update = new Thread();
+  class IterativeDeepening implements Runnable {
+  private Leaf result;
+  private Evaluator evaluate = new Evaluator(Heuristics.ex_wife);
+  private Thread update = new Thread();
 
-    @Override
-    public synchronized void run() {
-      while (!timeOut) {
-        if (depth <= maxDepth) {
-          pretender = alphaBeta(root, depth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, evaluate, timeOut);
-          if (timeOut) {
-            timer.cancel();
-            break;
-          }
-        }
-        if (pretender.node != null) {
-          root = pretender;
-        }
-        depth++;
+  @Override
+  public void run() {
+    while (depth <= maxDepth) {
+      try{
+      pretender = alphaBeta(root, depth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, evaluate, timeOut);
+      if(!timeOut)
+        result = pretender;
+      else
+        break;
+      depth++;
+      } catch(Exception e){
+        System.out.println("Depth was " + depth);
       }
-      timer.cancel();
     }
-    
-    public synchronized Leaf getResult(){
-      return root;
-    }
-    
-    public void done(){
-      timeOut = true;
-    }  
   }
-  private TimeUnit unit;
+
+  public synchronized Leaf getResult() {
+    return result;
+  }
+
+  public void done() {
+    timeOut = true;
+  }
+}
+private TimeUnit unit;
   public long time;
   public final long startTime = System.nanoTime();
   public long buffer;
-  @Override 
-  public void setChooseSquareTimeLimit(long t, TimeUnit u) {
+  @Override
+        public void setChooseSquareTimeLimit(long t, TimeUnit u) {
 // by default, do nothing
     time = t;
     unit = u;
   }
   
-  class Terminator extends TimerTask{
-    @Override
-    public synchronized void run(){
-      timeOut =  true;
-      task.interrupt();
-      task.interrupt();
-    }
-  }
 }
