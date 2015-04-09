@@ -22,37 +22,44 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.PriorityQueue;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 import java.util.function.ToDoubleFunction;
 import java.util.function.ToDoubleBiFunction;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /**
  *
  * @author elais
  */
 
 
-public class Group2Strategy implements Strategy{
+public class Group2Strategy implements Strategy {
   //private long startTime;
   
   //This is the alpha beta pruning algorithm
-  public Leaf alphaBeta(Leaf leaf, int depth, double alpha, double beta, Evaluator evaluate) {
+  public Leaf alphaBeta(Leaf leaf, int depth, double alpha, double beta, Evaluator evaluate, boolean timeOut) {
     //these are checks put in to place to make sure we have not run out of time
     //or that the search has now reached its max depth
     //on reaching the time limit the search cuts off and calculates the nodes at
     //the given depth
-    if((System.nanoTime() - startTime) > buffer){
-        //System.out.println("here");
-        return null;
+    if(timeOut){
+      return new Leaf(null, Double.NaN, null);
     }
-    
 
     //Transposition table
     double alphaOriginal = alpha;
+
     //transposition table look up, node is the lookup key
     //this speeds up search a little by eliminating the need to do needless
     //calculations on nodes already visited. 
@@ -68,13 +75,17 @@ public class Group2Strategy implements Strategy{
       if(alpha >= beta)
         return new Leaf(leaf.node, ttEntry.value, ttEntry.list);
     }
+
     List<Leaf> child_list = new ArrayList();
-    if(leaf.node.getBoard().isComplete()){
-      if(leaf.node.getBoard().getWinner() == leaf.node.getPlayer())
+    if (leaf.node.getBoard().isComplete()) {
+      if (leaf.node.getBoard().getWinner() == leaf.node.getPlayer()) {
         return new Leaf(leaf.node, Double.POSITIVE_INFINITY, child_list);
-      else
+      } else {
         return new Leaf(leaf.node, Double.NEGATIVE_INFINITY, child_list);
+      }
     }
+
+
     if (depth == 0) {
       return new Leaf(leaf.node, evaluate.exec(leaf), child_list);
     }
@@ -82,12 +93,10 @@ public class Group2Strategy implements Strategy{
     best.add(leaf);
     double bestValue = Double.NEGATIVE_INFINITY; //placeholder for highest score so far
     // returns value of node in final depth
-    if((System.nanoTime() - startTime) > buffer){
-        //System.out.println("here");
-        return null;
-    }   
+  
     //here is where we define the node's children, first it checks to see if the node
     //has children, if not it creates them as needed (barring this is a game ending state etc
+    //System.out.println("here");
 
     if (leaf.node.getBoard().getCurrentPossibleSquares().isEmpty()) {
       Node n = new Node(leaf.node.getBoard().pass());
@@ -104,17 +113,17 @@ public class Group2Strategy implements Strategy{
       }
       child_list.sort(Comparator.comparing((Leaf e) -> e.score).reversed());
     }
-    if((System.nanoTime() - startTime) > buffer){
-        //System.out.println("here");
-        return null;
+    if (timeOut) {
+      return new Leaf(null, Double.NaN, null);
     }
     //truthfully, this is the meat of the algorithm
     //importantly, after all of the child nodes are evaluated they
     //are sorted
-    Iterator<Leaf> children = child_list.iterator();
-    while (children.hasNext()) {
-      Leaf child = children.next();
-      child.score = -alphaBeta(child, depth - 1, -beta, -alpha, evaluate).score;
+    for(Leaf child: child_list) {
+      child.score = -alphaBeta(child, depth - 1, -beta, -alpha, evaluate, timeOut).score;
+      if(timeOut) {
+        return new Leaf(null, Double.NaN, null);
+      }
       bestValue = Math.max(bestValue, child.score);
       if(bestValue == child.score)
         best.add(0, child);
@@ -122,11 +131,8 @@ public class Group2Strategy implements Strategy{
       if(alpha >= beta){
         break;
       }
-      if((System.nanoTime() - startTime) > buffer){
-        //System.out.println("here");
-        return null;
-      }
     }
+    
     Leaf winner = new Leaf(leaf.node, bestValue, best);
     //Transposition Table store; node is lookup key
     TranspositionTable newEntry = new TranspositionTable(depth, bestValue, best);
@@ -138,52 +144,82 @@ public class Group2Strategy implements Strategy{
       newEntry.flag = TranspositionTable.Bound.EXACT;
     transpositionTable.put(leaf.node.getBoard().hashCode(), newEntry);
     //System.out.println(table.get(leaf.node));
-    if((System.nanoTime() - startTime) > buffer){
-        //System.out.println("here");
-        return null;
-    }
     //return best valued node.
     return winner;
   }
 
   private Map<Integer, TranspositionTable> transpositionTable;
   private final int infinity = Integer.MAX_VALUE;
-  private int currentDepth = 0;
+  private Leaf root;
+  private Leaf pretender;
+  private volatile boolean timeOut = false;
+  private int depth = 1;
+  private int maxDepth = 8;
+
   //private int maxDepth;
   @Override
-  public Square chooseSquare(Board board){
-    
-    Evaluator evaluate;
-    evaluate = new Evaluator(Heuristics.ex_wife);
-    transpositionTable = new HashMap<>(); // transposition table  
-    startTime = System.nanoTime();
-    buffer = unit.toNanos(time - (time * (1L/10L)));
-    //maxDepth = 2;
-    Leaf pretender;
-    Leaf root = new Leaf(new Node(board), Double.NEGATIVE_INFINITY, new ArrayList());
-    for(int maxDepth = 1; maxDepth < 4; maxDepth++) {
-      pretender = alphaBeta(root, maxDepth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, evaluate);
-      if ((System.nanoTime() - startTime) > buffer) {
-        //System.out.println("here");
-        return null;
-      }
-      root = pretender;
-    }
-    //System.out.println(root.children.get(0).score);
-    //System.out.println(root.children.get(1).score);
-    //System.out.println(root.children.get(2).score);
+  public Square chooseSquare(Board board) {
+    root  = new Leaf(new Node(board), Double.NEGATIVE_INFINITY, new ArrayList());
+    transpositionTable = new ConcurrentHashMap();
+    IterativeDeepening iddfs = new IterativeDeepening();
+    task = new Thread(iddfs);
+    timer = new Timer("timer", true);
+    task.start();
+    timer.schedule(new Terminator(), unit.toMillis(time - (time * 1L/2L)));
+    System.out.println(root.children.get(0).node.getSquare());
     return root.children.get(0).node.getSquare();
+    
   }
+  private Thread task;
+  private Timer timer;
+  class IterativeDeepening implements Runnable{
 
+    private Evaluator evaluate = new Evaluator(Heuristics.ex_wife);
+    private Thread update = new Thread();
+
+    @Override
+    public synchronized void run() {
+      while (!timeOut) {
+        if (depth <= maxDepth) {
+          pretender = alphaBeta(root, depth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, evaluate, timeOut);
+          if (timeOut) {
+            timer.cancel();
+            break;
+          }
+        }
+        if (pretender.node != null) {
+          root = pretender;
+        }
+        depth++;
+      }
+      timer.cancel();
+    }
+    
+    public synchronized Leaf getResult(){
+      return root;
+    }
+    
+    public void done(){
+      timeOut = true;
+    }  
+  }
+  private TimeUnit unit;
   public long time;
-  public TimeUnit unit;
-  public long startTime;
+  public final long startTime = System.nanoTime();
   public long buffer;
   @Override 
   public void setChooseSquareTimeLimit(long t, TimeUnit u) {
 // by default, do nothing
-    this.time = t;
-    this.unit = u;
+    time = t;
+    unit = u;
   }
   
+  class Terminator extends TimerTask{
+    @Override
+    public synchronized void run(){
+      timeOut =  true;
+      task.interrupt();
+      task.interrupt();
+    }
+  }
 }
