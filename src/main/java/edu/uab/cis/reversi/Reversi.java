@@ -140,7 +140,6 @@ public class Reversi {
         }
       }
     } catch (StrategyTimedOutException e) {
-      e.printStackTrace();
       results.get(e.getOpponentStrategy()).add(Result.WIN);
       results.get(e.getTimedOutStrategy()).add(Result.FAIL);
     }

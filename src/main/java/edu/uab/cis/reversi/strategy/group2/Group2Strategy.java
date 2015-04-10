@@ -144,7 +144,7 @@ public class Group2Strategy implements Strategy {
   private Map<Integer, ArrayList<Leaf>> killers;
   private Leaf root;
   private volatile boolean timeOut;
-  //private final int maxDepth = 8;
+  private final int maxDepth = 8;
   @Override
   public Square chooseSquare(Board board) {
     timeOut = false;
@@ -155,7 +155,7 @@ public class Group2Strategy implements Strategy {
     IterativeDeepening iddfs = new IterativeDeepening();
     service.submit(iddfs);
     try {
-      boolean isFinished = service.awaitTermination(time * 1/8, unit);
+      boolean isFinished = service.awaitTermination(time * 1/10, unit);
       if (!isFinished) {
         iddfs.done();
         root = iddfs.getResult();
@@ -187,13 +187,12 @@ public class Group2Strategy implements Strategy {
     public synchronized void run() {
       Leaf pretender;
       int idDepth = 2;
-      while (!timeOut && (idDepth <= Integer.MAX_VALUE)) {
+      while (!timeOut && (idDepth <= maxDepth)) {
         try {
           if ((idDepth <= Integer.MAX_VALUE) && !timeOut) {
             pretender = alphaBeta(root, idDepth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, evaluate, timeOut);
             result = pretender;
-            System.out.println("Searched to depth: " + idDepth);
-            
+            //System.out.println("Searched to depth: " + idDepth);       
             idDepth += 1;
           } else {
             break;
