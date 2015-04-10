@@ -155,7 +155,7 @@ public class Group2Strategy implements Strategy {
     IterativeDeepening iddfs = new IterativeDeepening();
     service.submit(iddfs);
     try {
-      boolean isFinished = service.awaitTermination(time * 1/10, unit);
+      boolean isFinished = service.awaitTermination(time * 1/5, unit);
       if (!isFinished) {
         iddfs.done();
         root = iddfs.getResult();
@@ -186,7 +186,7 @@ public class Group2Strategy implements Strategy {
     @Override
     public synchronized void run() {
       Leaf pretender;
-      int idDepth = 2;
+      int idDepth = 1;
       while (!timeOut && (idDepth <= maxDepth)) {
         try {
           if ((idDepth <= Integer.MAX_VALUE) && !timeOut) {
