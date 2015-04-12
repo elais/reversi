@@ -43,17 +43,10 @@ public class Group2Strategy implements Strategy {
     //calculations on nodes already visited. 
     TranspositionTable ttEntry = transpositionTable.get(leaf.node.getBoard().hashCode());
     if (ttEntry != null && ttEntry.depth >= depth) {
-      if (ttEntry.flag == TranspositionTable.Bound.EXACT) {
-        //System.out.print("here");
-        return new Leaf(leaf.node, ttEntry.value, ttEntry.children);
-      } else if (ttEntry.flag == TranspositionTable.Bound.LOWERBOUND) {
-        alpha = Math.max(alpha, ttEntry.value);
-      } else if (ttEntry.flag == TranspositionTable.Bound.UPPERBOUND) {
-        beta = Math.min(beta, ttEntry.value);
-      }
-      if (alpha >= beta) {
-        return new Leaf(leaf.node, ttEntry.value, ttEntry.children);
-      }
+      if (ttEntry.flag == TranspositionTable.Bound.EXACT) return new Leaf(leaf.node, ttEntry.value, ttEntry.children);
+      else if (ttEntry.flag == TranspositionTable.Bound.LOWERBOUND) alpha = Math.max(alpha, ttEntry.value);
+      else if (ttEntry.flag == TranspositionTable.Bound.UPPERBOUND) beta = Math.min(beta, ttEntry.value);
+      if (alpha >= beta) return new Leaf(leaf.node, ttEntry.value, ttEntry.children);
     }
     if (timeOut) {
       throw new TimeLapsedException("Time Lapsed");
@@ -132,7 +125,7 @@ public class Group2Strategy implements Strategy {
   private Map<Integer, TranspositionTable> transpositionTable;
   private volatile Leaf root;
   private volatile boolean timeOut;
-  private final int maxDepth = 18;
+  private final int maxDepth = 12;
 
   @Override
   public Square chooseSquare(Board board) {
@@ -185,7 +178,7 @@ public class Group2Strategy implements Strategy {
           }
           startDepth += 1;
         } catch (Exception e) {
-          System.out.println("Final Depth: " + startDepth);
+          //System.out.println("Final Depth: " + startDepth);
           //e.printStackTrace();
         }
       }
