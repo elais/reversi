@@ -32,9 +32,7 @@ public class Group2Strategy implements Strategy {
     //or that the search has now reached its max depth
     //on reaching the time limit the search cuts off and calculates the nodes at
     //the given depth
-    if (timeOut) {
-      throw new TimeLapsedException("Time Lapsed");
-    }
+    if (timeOut) throw new TimeLapsedException("Time Lapsed");
     //Transposition table
     double alphaOriginal = alpha;
 
@@ -48,11 +46,9 @@ public class Group2Strategy implements Strategy {
       else if (ttEntry.flag == TranspositionTable.Bound.UPPERBOUND) beta = Math.min(beta, ttEntry.value);
       if (alpha >= beta) return new Leaf(leaf.node, ttEntry.value, ttEntry.children);
     }
-    if (timeOut) {
-      throw new TimeLapsedException("Time Lapsed");
-    }
+    if (timeOut) throw new TimeLapsedException("Time Lapsed");
 
-    List<Leaf> child_list = new ArrayList<Leaf>();
+    ArrayList<Leaf> child_list = new ArrayList<Leaf>();
     if (leaf.node.getBoard().isComplete()) {
       if (leaf.node.getBoard().getWinner() == leaf.node.getPlayer()) {
         return new Leaf(leaf.node, Double.POSITIVE_INFINITY, new ArrayList<Leaf>());
@@ -61,9 +57,7 @@ public class Group2Strategy implements Strategy {
       }
     }
 
-    if (depth == 0) {
-      return new Leaf(leaf.node, evaluate.exec(leaf), new ArrayList<Leaf>());
-    }
+    if (depth == 0) return new Leaf(leaf.node, evaluate.exec(leaf), new ArrayList<Leaf>());
     Leaf killer;
     double bestValue = Double.NEGATIVE_INFINITY; //placeholder for highest score so far
     // returns value of node in final depth
@@ -84,16 +78,12 @@ public class Group2Strategy implements Strategy {
     child_list.sort(Comparator.comparing((Leaf e) -> e.score).reversed());
 
 
-    if (timeOut) {
-      throw new TimeLapsedException("Time Lapsed");
-    }
+    if (timeOut) throw new TimeLapsedException("Time Lapsed");
     //truthfully, this is the meat of the algorithm
-    List<Leaf> updatedChildren = new ArrayList<Leaf>();
+    ArrayList<Leaf> updatedChildren = new ArrayList<Leaf>();
     for (Leaf child : child_list) {
       child.score = -negaMax(child, depth - 1, -beta, -alpha, evaluate).score;
-      if (timeOut) {
-        throw new TimeLapsedException("Time Lapsed");
-      }
+      if (timeOut) throw new TimeLapsedException("Time Lapsed");
       updatedChildren.add(child);
       bestValue = Math.max(bestValue, child.score);
       alpha = Math.max(alpha, child.score);
@@ -101,9 +91,7 @@ public class Group2Strategy implements Strategy {
         break;
       }
     }
-    if (timeOut) {
-      throw new TimeLapsedException("Time Lapsed");
-    }
+    if (timeOut) throw new TimeLapsedException("Time Lapsed");
     updatedChildren.sort(Comparator.comparing((Leaf e) -> e.score).reversed());
     Leaf winner = new Leaf(leaf.node, bestValue, updatedChildren);
     //Transposition Table store; node is lookup key
@@ -146,7 +134,20 @@ public class Group2Strategy implements Strategy {
       }
     } catch (Exception ex) {
       System.out.println("Cought Exception");
-      ex.printStackTrace();
+      //ex.printStackTrace();
+      ArrayList<Leaf> child_list = new ArrayList<Leaf>();
+      if (root.node.getBoard().getCurrentPossibleSquares().isEmpty()) {
+        Node n = new Node(root.node.getBoard().pass());
+        n.setSquare(Square.PASS);
+        return n.getSquare();
+      } else for (Square s : root.node.getBoard().getCurrentPossibleSquares()) {
+        Node n = new Node(root.node.play(s));
+        n.setSquare(s);
+        Leaf child = new Leaf(n, -Heuristics.ex_wife.applyAsDouble(n), new ArrayList<Leaf>());
+        child_list.add(child);
+      }
+      child_list.sort(Comparator.comparing((Leaf e) -> e.score).reversed());
+      return child_list.get(0).node.getSquare();
     }
     root = iddfs.getResult();
     return root.children.get(0).node.getSquare();
@@ -164,10 +165,11 @@ public class Group2Strategy implements Strategy {
   class IterativeDeepening implements Runnable {
 
     private Leaf result;
-    private Leaf pretender = root;
+    private Leaf pretender;
     private final Evaluator evaluate = new Evaluator(Heuristics.ex_wife);
     @Override
     public synchronized void run() {
+      pretender = root;
       timeOut = false;
       int startDepth = 2;
       while (!timeOut && startDepth <= maxDepth) {
@@ -178,7 +180,7 @@ public class Group2Strategy implements Strategy {
           }
           startDepth += 1;
         } catch (Exception e) {
-          //System.out.println("Final Depth: " + startDepth);
+          System.out.println("Final Depth: " + startDepth);
           //e.printStackTrace();
         }
       }

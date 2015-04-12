@@ -53,13 +53,11 @@ final class Node {
   }
 
   public Board play(Square a) {
-    Board play = node.play(a);
-    return play;
+    return node.play(a);
   }
   
   public Board pass(){
-    Board pass = this.getBoard().play(Square.PASS);
-    return pass;
+    return this.getBoard().play(Square.PASS);
   }
   
   public Player getPlayer(){
@@ -67,8 +65,7 @@ final class Node {
   }
 
   public Board getBoard() {
-    Board board = node;
-    return board;
+    return node;
   }
 
   public void setSquare(Square a){
@@ -113,7 +110,7 @@ class TranspositionTable{
   public enum Bound{UPPERBOUND, LOWERBOUND, EXACT};
   public Bound flag;
   
-  public TranspositionTable(int d, double s, List l){
+  public TranspositionTable(int d, double s, List<Leaf> l){
     this.depth = d;
     this.value = s;
     this.children = l;

@@ -9,6 +9,6 @@ group_strategies=$(find src/main/java/edu/uab/cis/reversi/strategy/group2 -name 
                    tr '\n' ' ')
 mvn exec:java \
 -Dexec.mainClass="edu.uab.cis.reversi.Reversi" \
--Dexec.args="--games 100 --timeout 1000 --strategies \
+-Dexec.args="--games 50 --timeout 100 --strategies \
 $baseline_strategies \
 $group_strategies"
