@@ -11,7 +11,6 @@ import edu.uab.cis.reversi.Board;
 import edu.uab.cis.reversi.Player;
 import edu.uab.cis.reversi.Square;
 import edu.uab.cis.reversi.Strategy;
-import edu.uab.cis.reversi.strategy.group2.*;
 
 import java.util.Comparator;
 import java.util.Iterator;
@@ -30,7 +29,7 @@ public class Group2Strategy implements Strategy {
   //private long startTime;
 
   //This is the alpha beta pruning algorithm
-  public Leaf alphaBeta(Leaf leaf, int depth, double alpha, double beta, Evaluator evaluate, boolean timeOut) throws TimeLapsedException {
+  private Leaf negaMax(Leaf leaf, int depth, double alpha, double beta, Evaluator evaluate) throws TimeLapsedException {
     //these are checks put in to place to make sure we have not run out of time
     //or that the search has now reached its max depth
     //on reaching the time limit the search cuts off and calculates the nodes at
@@ -38,15 +37,6 @@ public class Group2Strategy implements Strategy {
     if (timeOut) {
       throw new TimeLapsedException("Time Lapsed");
     }
-//    Leaf killer = null;
-//    if(leaf.node.player == Player.BLACK){
-//      if(killers.get(depth).get(0) != null)
-//        killer = killers.get(depth).get(0);
-//    } else if(leaf.node.player == Player.WHITE){
-//      if(killers.get(depth).get(1) != null)
-//        killer = killers.get(depth).get(1);
-//    }
-      
     //Transposition table
     double alphaOriginal = alpha;
 
@@ -67,8 +57,11 @@ public class Group2Strategy implements Strategy {
         return new Leaf(leaf.node, ttEntry.value, ttEntry.list);
       }
     }
+    if (timeOut) {
+      throw new TimeLapsedException("Time Lapsed");
+    }
 
-    List<Leaf> child_list = new ArrayList();
+    List<Leaf> child_list = new ArrayList<Leaf>();
     if (leaf.node.getBoard().isComplete()) {
       if (leaf.node.getBoard().getWinner() == leaf.node.getPlayer()) {
         return new Leaf(leaf.node, Double.POSITIVE_INFINITY, child_list);
@@ -80,37 +73,42 @@ public class Group2Strategy implements Strategy {
     if (depth == 0) {
       return new Leaf(leaf.node, evaluate.exec(leaf), child_list);
     }
-    List<Leaf> best = new ArrayList();
+    List<Leaf> best = new ArrayList<Leaf>();
+    Leaf killer;
     best.add(leaf);
     double bestValue = Double.NEGATIVE_INFINITY; //placeholder for highest score so far
     // returns value of node in final depth
 
     //here is where we define the node's children, first it checks to see if the node
     //has children, if not it creates them as needed (barring this is a game ending state etc
-    //System.out.println("here");
+    if(killers.containsKey(depth)){ 
+      killer = killers.get(depth).getOrDefault(leaf.node.player, null);
+    } else{
+      killer = null;
+    }
+    boolean gotKiller = false;
     if (leaf.node.getBoard().getCurrentPossibleSquares().isEmpty()) {
       Node n = new Node(leaf.node.getBoard().pass());
       n.setSquare(Square.PASS);
-      child_list.add(new Leaf(n, bestValue, child_list));
+      return new Leaf(n, bestValue, new ArrayList<Leaf>());
     } else {
-      Iterator<Square> it = leaf.node.getBoard().getCurrentPossibleSquares().iterator();
-      while (it.hasNext()) {
-        Square s = it.next();
+      for (Square s : leaf.node.getBoard().getCurrentPossibleSquares()) {
         Node n = new Node(leaf.node.play(s));
         n.setSquare(s);
-        Leaf child = new Leaf(n, Heuristics.ex_wife.applyAsDouble(n), child_list);
+        Leaf child = new Leaf(n, Heuristics.ex_wife.applyAsDouble(n), new ArrayList<Leaf>());
         child_list.add(child);
       }
       child_list.sort(Comparator.comparing((Leaf e) -> e.score));
     }
+//    if (gotKiller) {
+//      child_list.add(0, killer);
+//    }
     if (timeOut) {
       throw new TimeLapsedException("Time Lapsed");
     }
     //truthfully, this is the meat of the algorithm
-    //importantly, after all of the child nodes are evaluated they
-    //are sorted
     for (Leaf child : child_list) {
-      child.score = -alphaBeta(child, depth - 1, -beta, -alpha, evaluate, timeOut).score;
+      child.score = -negaMax(child, depth - 1, -beta, -alpha, evaluate).score;
       if (timeOut) {
         throw new TimeLapsedException("Time Lapsed");
       }
@@ -120,10 +118,21 @@ public class Group2Strategy implements Strategy {
       }
       alpha = Math.max(alpha, child.score);
       if (alpha >= beta) {
+        if(!killers.containsKey(depth)){
+          Map<Player, Leaf> innerMap = new ConcurrentHashMap<Player, Leaf>();
+          innerMap.put(leaf.node.getPlayer(), child);
+          killers.put(depth, innerMap);
+        } else {
+          Map<Player, Leaf> innerMap = killers.get(depth);
+          innerMap.put(leaf.node.getPlayer(), child);
+          killers.put(depth, innerMap);
+        }
         break;
       }
     }
-
+    if (timeOut) {
+      throw new TimeLapsedException("Time Lapsed");
+    }
     Leaf winner = new Leaf(leaf.node, bestValue, best);
     //Transposition Table store; node is lookup key
     TranspositionTable newEntry = new TranspositionTable(depth, bestValue, best);
@@ -135,41 +144,41 @@ public class Group2Strategy implements Strategy {
       newEntry.flag = TranspositionTable.Bound.EXACT;
     }
     transpositionTable.put(leaf.node.getBoard().hashCode(), newEntry);
-    //System.out.println(table.get(leaf.node));
     //return best valued node.
     return winner;
   }
 
   private Map<Integer, TranspositionTable> transpositionTable;
-  private Map<Integer, ArrayList<Leaf>> killers;
-  private Leaf root;
+  private Map<Integer, Map<Player, Leaf>> killers;
+  private volatile Leaf root;
   private volatile boolean timeOut;
-  private final int maxDepth = 8;
+  private final int maxDepth = 12;
+
   @Override
   public Square chooseSquare(Board board) {
-    timeOut = false;
-    root = new Leaf(new Node(board), Double.NEGATIVE_INFINITY, new ArrayList());
-    transpositionTable = new ConcurrentHashMap();
-    killers = new ConcurrentHashMap();
-    ExecutorService service = Executors.newCachedThreadPool();
+    ExecutorService service;
+    service = Executors.newSingleThreadExecutor();
+    root = new Leaf(new Node(board), Double.NEGATIVE_INFINITY, new ArrayList<Leaf>());
+    transpositionTable = new ConcurrentHashMap<Integer, TranspositionTable>();
+    killers = new ConcurrentHashMap<Integer, Map<Player, Leaf>>();
     IterativeDeepening iddfs = new IterativeDeepening();
-    service.submit(iddfs);
     try {
-      boolean isFinished = service.awaitTermination(time * 1/5, unit);
-      if (!isFinished) {
+      service.submit(iddfs);
+      boolean isFinished = service.awaitTermination(time * 4/5, unit);
+      if(!isFinished){
         iddfs.done();
         root = iddfs.getResult();
+        service.shutdown();
+        //System.out.println(root.children.get(0).node.getSquare());
+        return root.children.get(0).node.getSquare();
       }
-      service.shutdown();
-    } catch (Exception e) {
-      System.out.println("Thread Terminated");
+    } catch (Exception ex) {
+      System.out.println("Cought Exception");
+      ex.printStackTrace();
     }
-    if (root != null) {
-      return root.children.get(0).node.getSquare();
-    } else {
-      System.out.println("root was null");
-      return board.getCurrentPossibleSquares().iterator().next();
-    }
+    root = iddfs.getResult();
+    return root.children.get(0).node.getSquare();
+
   }
 
   class TimeLapsedException extends Exception {
@@ -181,51 +190,42 @@ public class Group2Strategy implements Strategy {
   }
 
   class IterativeDeepening implements Runnable {
+
     private Leaf result;
-    private Evaluator evaluate = new Evaluator(Heuristics.ex_wife);
+    private final Evaluator evaluate = new Evaluator(Heuristics.ex_wife);
     @Override
     public synchronized void run() {
       Leaf pretender;
-      int idDepth = 1;
-      while (!timeOut && (idDepth <= maxDepth)) {
+      timeOut = false;
+      int startDepth = 2;
+      while (!timeOut && startDepth <= maxDepth) {
         try {
-          if ((idDepth <= Integer.MAX_VALUE) && !timeOut) {
-            pretender = alphaBeta(root, idDepth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, evaluate, timeOut);
+          pretender = negaMax(root, startDepth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, evaluate);
+          if (pretender != null) {
             result = pretender;
-            //System.out.println("Searched to depth: " + idDepth);       
-            idDepth += 1;
-          } else {
-            break;
           }
+          startDepth += 1;
         } catch (Exception e) {
-          System.out.println("exception in run");
-          e.printStackTrace();
-          System.out.println("Depth was " + idDepth);
+          System.out.println("Final Depth: " + startDepth);
+          //e.printStackTrace();
         }
       }
     }
 
     public synchronized Leaf getResult() {
-      if (result != null) {
-        return result;
-      } else {
-        return root;
-      }
+      return result;
     }
 
     public void done() {
       timeOut = true;
     }
-
-
   }
+  
   private TimeUnit unit;
   public long time;
-  public long startTime = System.nanoTime();
-  public long buffer;
 
   @Override
-  public synchronized void setChooseSquareTimeLimit(long t, TimeUnit u) {
+  public void setChooseSquareTimeLimit(long t, TimeUnit u) {
     unit = u;
     time = t;
   }
