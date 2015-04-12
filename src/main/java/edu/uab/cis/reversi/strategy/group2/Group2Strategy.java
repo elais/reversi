@@ -8,12 +8,10 @@ package edu.uab.cis.reversi.strategy.group2;
 import java.util.ArrayList;
 import java.util.List;
 import edu.uab.cis.reversi.Board;
-import edu.uab.cis.reversi.Player;
 import edu.uab.cis.reversi.Square;
 import edu.uab.cis.reversi.Strategy;
 
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -79,34 +77,31 @@ public class Group2Strategy implements Strategy {
 
     //here is where we define the node's children, first it checks to see if the node
     //has children, if not it creates them as needed (barring this is a game ending state etc
-    if(!leaf.children.isEmpty()){
-      child_list = leaf.children;
-    } else {
-      if (leaf.node.getBoard().getCurrentPossibleSquares().isEmpty()) {
-        Node n = new Node(leaf.node.getBoard().pass());
-        n.setSquare(Square.PASS);
-        return new Leaf(n, bestValue, new ArrayList<Leaf>());
-      } else {
-        for (Square s : leaf.node.getBoard().getCurrentPossibleSquares()) {
-          Node n = new Node(leaf.node.play(s));
-          n.setSquare(s);
-          Leaf child = new Leaf(n, Heuristics.ex_wife.applyAsDouble(n), new ArrayList<Leaf>());
-          child_list.add(child);
-        }
-        child_list.sort(Comparator.comparing((Leaf e) -> e.score));
-      }
+
+    if (leaf.node.getBoard().getCurrentPossibleSquares().isEmpty()) {
+      Node n = new Node(leaf.node.getBoard().pass());
+      n.setSquare(Square.PASS);
+      return new Leaf(n, bestValue, new ArrayList<Leaf>());
+    } else for (Square s : leaf.node.getBoard().getCurrentPossibleSquares()) {
+      Node n = new Node(leaf.node.play(s));
+      n.setSquare(s);
+      Leaf child = new Leaf(n, -Heuristics.ex_wife.applyAsDouble(n), new ArrayList<Leaf>());
+      child_list.add(child);
     }
+    child_list.sort(Comparator.comparing((Leaf e) -> e.score).reversed());
+
 
     if (timeOut) {
       throw new TimeLapsedException("Time Lapsed");
     }
     //truthfully, this is the meat of the algorithm
+    List<Leaf> updatedChildren = new ArrayList<Leaf>();
     for (Leaf child : child_list) {
-      child = negaMax(child, depth - 1, -beta, -alpha, evaluate);
-      child.score = -child.score;
+      child.score = -negaMax(child, depth - 1, -beta, -alpha, evaluate).score;
       if (timeOut) {
         throw new TimeLapsedException("Time Lapsed");
       }
+      updatedChildren.add(child);
       bestValue = Math.max(bestValue, child.score);
       alpha = Math.max(alpha, child.score);
       if (alpha >= beta) {
@@ -116,10 +111,10 @@ public class Group2Strategy implements Strategy {
     if (timeOut) {
       throw new TimeLapsedException("Time Lapsed");
     }
-    child_list.sort(Comparator.comparing((Leaf e) -> e.score));
-    Leaf winner = new Leaf(leaf.node, bestValue, child_list);
+    updatedChildren.sort(Comparator.comparing((Leaf e) -> e.score).reversed());
+    Leaf winner = new Leaf(leaf.node, bestValue, updatedChildren);
     //Transposition Table store; node is lookup key
-    TranspositionTable newEntry = new TranspositionTable(depth, bestValue, child_list);
+    TranspositionTable newEntry = new TranspositionTable(depth, bestValue, updatedChildren);
     if (bestValue <= alphaOriginal) {
       newEntry.flag = TranspositionTable.Bound.UPPERBOUND;
     } else if (bestValue >= beta) {
@@ -129,14 +124,15 @@ public class Group2Strategy implements Strategy {
     }
     transpositionTable.put(leaf.node.getBoard().hashCode(), newEntry);
     //return best valued node.
+    //System.out.println(bestValue);
+    //System.out.println(updatedChildren.get(0).score);
     return winner;
   }
 
   private Map<Integer, TranspositionTable> transpositionTable;
-  private Map<Integer, Map<Player, Leaf>> killers;
   private volatile Leaf root;
   private volatile boolean timeOut;
-  private final int maxDepth = 12;
+  private final int maxDepth = 18;
 
   @Override
   public Square chooseSquare(Board board) {
@@ -144,7 +140,6 @@ public class Group2Strategy implements Strategy {
     service = Executors.newSingleThreadExecutor();
     root = new Leaf(new Node(board), Double.NEGATIVE_INFINITY, new ArrayList<Leaf>());
     transpositionTable = new ConcurrentHashMap<Integer, TranspositionTable>();
-    killers = new ConcurrentHashMap<Integer, Map<Player, Leaf>>();
     IterativeDeepening iddfs = new IterativeDeepening();
     try {
       service.submit(iddfs);
@@ -176,15 +171,15 @@ public class Group2Strategy implements Strategy {
   class IterativeDeepening implements Runnable {
 
     private Leaf result;
+    private Leaf pretender = root;
     private final Evaluator evaluate = new Evaluator(Heuristics.ex_wife);
     @Override
     public synchronized void run() {
-      Leaf pretender;
       timeOut = false;
       int startDepth = 2;
       while (!timeOut && startDepth <= maxDepth) {
         try {
-          pretender = negaMax(root, startDepth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, evaluate);
+          pretender = negaMax(pretender, startDepth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, evaluate);
           if (pretender != null) {
             result = pretender;
           }
