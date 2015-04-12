@@ -47,14 +47,14 @@ public class Group2Strategy implements Strategy {
     if (ttEntry != null && ttEntry.depth >= depth) {
       if (ttEntry.flag == TranspositionTable.Bound.EXACT) {
         //System.out.print("here");
-        return new Leaf(leaf.node, ttEntry.value, ttEntry.list);
+        return new Leaf(leaf.node, ttEntry.value, ttEntry.children);
       } else if (ttEntry.flag == TranspositionTable.Bound.LOWERBOUND) {
         alpha = Math.max(alpha, ttEntry.value);
       } else if (ttEntry.flag == TranspositionTable.Bound.UPPERBOUND) {
         beta = Math.min(beta, ttEntry.value);
       }
       if (alpha >= beta) {
-        return new Leaf(leaf.node, ttEntry.value, ttEntry.list);
+        return new Leaf(leaf.node, ttEntry.value, ttEntry.children);
       }
     }
     if (timeOut) {
@@ -64,78 +64,62 @@ public class Group2Strategy implements Strategy {
     List<Leaf> child_list = new ArrayList<Leaf>();
     if (leaf.node.getBoard().isComplete()) {
       if (leaf.node.getBoard().getWinner() == leaf.node.getPlayer()) {
-        return new Leaf(leaf.node, Double.POSITIVE_INFINITY, child_list);
+        return new Leaf(leaf.node, Double.POSITIVE_INFINITY, new ArrayList<Leaf>());
       } else {
-        return new Leaf(leaf.node, Double.NEGATIVE_INFINITY, child_list);
+        return new Leaf(leaf.node, Double.NEGATIVE_INFINITY, new ArrayList<Leaf>());
       }
     }
 
     if (depth == 0) {
-      return new Leaf(leaf.node, evaluate.exec(leaf), child_list);
+      return new Leaf(leaf.node, evaluate.exec(leaf), new ArrayList<Leaf>());
     }
-    List<Leaf> best = new ArrayList<Leaf>();
     Leaf killer;
-    best.add(leaf);
     double bestValue = Double.NEGATIVE_INFINITY; //placeholder for highest score so far
     // returns value of node in final depth
 
     //here is where we define the node's children, first it checks to see if the node
     //has children, if not it creates them as needed (barring this is a game ending state etc
-    if(killers.containsKey(depth)){ 
-      killer = killers.get(depth).getOrDefault(leaf.node.player, null);
-    } else{
-      killer = null;
-    }
-    boolean gotKiller = false;
-    if (leaf.node.getBoard().getCurrentPossibleSquares().isEmpty()) {
-      Node n = new Node(leaf.node.getBoard().pass());
-      n.setSquare(Square.PASS);
-      return new Leaf(n, bestValue, new ArrayList<Leaf>());
+    if(!leaf.children.isEmpty()){
+      child_list = leaf.children;
     } else {
-      for (Square s : leaf.node.getBoard().getCurrentPossibleSquares()) {
-        Node n = new Node(leaf.node.play(s));
-        n.setSquare(s);
-        Leaf child = new Leaf(n, Heuristics.ex_wife.applyAsDouble(n), new ArrayList<Leaf>());
-        child_list.add(child);
+      if (leaf.node.getBoard().getCurrentPossibleSquares().isEmpty()) {
+        Node n = new Node(leaf.node.getBoard().pass());
+        n.setSquare(Square.PASS);
+        return new Leaf(n, bestValue, new ArrayList<Leaf>());
+      } else {
+        for (Square s : leaf.node.getBoard().getCurrentPossibleSquares()) {
+          Node n = new Node(leaf.node.play(s));
+          n.setSquare(s);
+          Leaf child = new Leaf(n, Heuristics.ex_wife.applyAsDouble(n), new ArrayList<Leaf>());
+          child_list.add(child);
+        }
+        child_list.sort(Comparator.comparing((Leaf e) -> e.score));
       }
-      child_list.sort(Comparator.comparing((Leaf e) -> e.score));
     }
-//    if (gotKiller) {
-//      child_list.add(0, killer);
-//    }
+
     if (timeOut) {
       throw new TimeLapsedException("Time Lapsed");
     }
     //truthfully, this is the meat of the algorithm
     for (Leaf child : child_list) {
-      child.score = -negaMax(child, depth - 1, -beta, -alpha, evaluate).score;
+      child = negaMax(child, depth - 1, -beta, -alpha, evaluate);
+      child.score = -child.score;
       if (timeOut) {
         throw new TimeLapsedException("Time Lapsed");
       }
       bestValue = Math.max(bestValue, child.score);
-      if (bestValue == child.score) {
-        best.add(0, child);
-      }
       alpha = Math.max(alpha, child.score);
       if (alpha >= beta) {
-        if(!killers.containsKey(depth)){
-          Map<Player, Leaf> innerMap = new ConcurrentHashMap<Player, Leaf>();
-          innerMap.put(leaf.node.getPlayer(), child);
-          killers.put(depth, innerMap);
-        } else {
-          Map<Player, Leaf> innerMap = killers.get(depth);
-          innerMap.put(leaf.node.getPlayer(), child);
-          killers.put(depth, innerMap);
-        }
         break;
       }
     }
     if (timeOut) {
       throw new TimeLapsedException("Time Lapsed");
     }
-    Leaf winner = new Leaf(leaf.node, bestValue, best);
+    child_list.sort(Comparator.comparing((Leaf e) -> e.score));
+    Leaf winner = new Leaf(leaf.node, bestValue, child_list);
     //Transposition Table store; node is lookup key
-    TranspositionTable newEntry = new TranspositionTable(depth, bestValue, best);
+    TranspositionTable newEntry = new TranspositionTable(depth, bestValue, child_list);
     if (bestValue <= alphaOriginal) {
       newEntry.flag = TranspositionTable.Bound.UPPERBOUND;
     } else if (bestValue >= beta) {
