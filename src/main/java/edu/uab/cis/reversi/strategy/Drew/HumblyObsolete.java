@@ -37,7 +37,7 @@ public class HumblyObsolete implements Strategy {
   	Square bestSquare = null;
 
 	if (board.getSquareOwners().size() == 4){
-		System.out.println("in my special case");
+		//System.out.println("in my special case");
 		return chooseOne(board.getCurrentPossibleSquares());
 	}
 
@@ -54,7 +54,7 @@ public class HumblyObsolete implements Strategy {
 		System.out.println("best square is null, " + board.getSquareOwners().size() + " " + board.getCurrentPossibleSquares().size());
 		//return chooseOne(board.getCurrentPossibleSquares());
 	}
-	System.out.println("about to return bestSquare: " + bestSquare);
+	//System.out.println("about to return bestSquare: " + bestSquare);
   	return bestSquare;
   }	
 

@@ -5,15 +5,14 @@
  */
 package edu.uab.cis.reversi.strategy.group2;
 
-import java.util.ArrayList;
-import java.util.List;
 import edu.uab.cis.reversi.Board;
 import edu.uab.cis.reversi.Square;
 import edu.uab.cis.reversi.Strategy;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
-import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -24,7 +23,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author elais
  */
-public class Group2Strategy implements Strategy {
+public class FalseGroup2Strategy implements Strategy {
   //private long startTime;
 
   //This is the alpha beta pruning algorithm
@@ -114,11 +113,46 @@ public class Group2Strategy implements Strategy {
     return winner;
   }
 
+  private Leaf MTDf(Leaf groot, double f, int depth){
+    double g = f;
+    double upperBound = Double.POSITIVE_INFINITY;
+    double lowerBound = Double.NEGATIVE_INFINITY;
+    double beta;
+    Leaf groot2 = groot;
+    Leaf mtdResult = groot;
+
+    while(lowerBound < upperBound && !timeOut){
+      if(g == lowerBound){
+        beta = g + 1;
+      } else{
+        beta = g;
+      }
+      try {
+        groot2 = negaMax(groot2, depth, beta - 1, beta, evaluate );
+        g = groot2.children.get(0).score;
+        mtdResult = groot2;
+        //System.out.println("HERE");
+        if(g < beta){
+          upperBound = g;
+        } else{
+          lowerBound = g;
+        }
+      } catch (TimeLapsedException e) {
+        return mtdResult;
+      }
+
+    }
+    //System.out.println("HERE");
+
+    return mtdResult;
+  }
+
   private volatile int nodeCount = 0;
   private Map<Integer, TranspositionTable> transpositionTable;
   private volatile Leaf root;
   private volatile boolean timeOut;
   private final int maxDepth = 12;
+  private final Evaluator evaluate = new Evaluator(Heuristics.ex_wife);
 
   @Override
   public Square chooseSquare(Board board) {
@@ -135,7 +169,7 @@ public class Group2Strategy implements Strategy {
         iddfs.done();
         root = iddfs.getResult();
         service.shutdown();
-        System.out.println("negaMax nodes counted: " + nodeCount);
+        System.out.println("MTDf nodes counted: " + nodeCount);
         return root.children.get(0).node.getSquare();
       }
     } catch (Exception ex) {
@@ -153,7 +187,7 @@ public class Group2Strategy implements Strategy {
         child_list.add(child);
       }
       child_list.sort(Comparator.comparing((Leaf e) -> e.score).reversed());
-      System.out.println("negaMax nodes counted: " + nodeCount);
+      System.out.println("MTDf nodes counted: " + nodeCount);
       return child_list.get(0).node.getSquare();
     }
     root = iddfs.getResult();
@@ -173,22 +207,28 @@ public class Group2Strategy implements Strategy {
 
     private Leaf result;
     private Leaf pretender;
-    private final Evaluator evaluate = new Evaluator(Heuristics.ex_wife);
     @Override
     public synchronized void run() {
-      pretender = root;
+      double f = 0;
+      try {
+        pretender = negaMax(root, 2, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, evaluate);
+        f = pretender.children.get(0).score;
+        System.out.println(f);
+      } catch (TimeLapsedException e) {
+        e.printStackTrace();
+      }
       timeOut = false;
-      int startDepth = 2;
+      int startDepth = 3;
       while (!timeOut && startDepth <= maxDepth) {
         try {
-          pretender = negaMax(pretender, startDepth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, evaluate);
+          pretender = MTDf(pretender, f, startDepth);
           if (pretender != null) {
             result = pretender;
           }
           startDepth += 1;
         } catch (Exception e) {
-          System.out.println("negaMax Final Depth: " + startDepth);
-
+          System.out.println("MTDf Final Depth: " + startDepth);
+          //e.printStackTrace();
         }
       }
     }
