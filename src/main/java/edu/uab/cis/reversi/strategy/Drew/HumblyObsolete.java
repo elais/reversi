@@ -19,18 +19,6 @@ import edu.uab.cis.reversi.Player;
 
 public class HumblyObsolete implements Strategy {
 
-	//square values
-	private final static int CORNER = 99;
-	private final static int C = -8;
-	private final static int A = 8;
-	private final static int B = 6;
-	private final static int X = -24;
-	private final static int XA = -4;
-	private final static int XB = -3;
-	private final static int A2 = 7;
-	private final static int B2 = 4;
-	private final static int CENTER = 0;
-
 	private final static int WINNING_POSITION = Integer.MAX_VALUE - 1;
 	private final static int LOSING_POSITION = Integer.MIN_VALUE + 1;
 
@@ -132,6 +120,17 @@ private int applyHeuristic(Board board){
 	if (board.getMoves().size() < LATE_GAME_CUTOFF) return earlyGameHeuristic(board);
 	else return lateGameHeuristic(board);
 }
+//square values
+private final static int CORNER = 99;
+private final static int C = -8;
+private final static int A = 8;
+private final static int B = 6;
+private final static int X = -24;
+private final static int XA = -4;
+private final static int XB = -3;
+private final static int A2 = 7;
+private final static int B2 = 4;
+private final static int CENTER = 0;
 
 static HashMap<Square, Integer> squareValues = new HashMap<Square, Integer>();
 static{
