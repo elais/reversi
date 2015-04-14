@@ -8,12 +8,7 @@ package edu.uab.cis.reversi.strategy.group2;
 import edu.uab.cis.reversi.Board;
 import edu.uab.cis.reversi.Player;
 import edu.uab.cis.reversi.Square;
-import java.math.BigDecimal;
-import java.util.Comparator;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import edu.uab.cis.reversi.strategy.group2.*;
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,7 +17,7 @@ import java.util.Set;
  *
  * @author elais
  */
-final class Node {
+public final class Node {
 
   private final Board node;
   public Square s;
@@ -84,35 +79,3 @@ final class Node {
   }
 }
 
-class Leaf{ 
-  public Node node; 
-  public int row;
-  public int column;
-  public double score;
-  public List<Leaf> children;
-  
-  public Leaf(Node x, double y, List<Leaf> c) { 
-    this.node = x; 
-    this.score = y;
-    this.children = c;
-    
-  }
-  
-  public double getScore(){
-    return score;
-  }
-} 
-
-class TranspositionTable{
-  public int depth;
-  public double value;
-  public List<Leaf> children;
-  public enum Bound{UPPERBOUND, LOWERBOUND, EXACT};
-  public Bound flag;
-  
-  public TranspositionTable(int d, double s, List<Leaf> l){
-    this.depth = d;
-    this.value = s;
-    this.children = l;
-  }  
-}

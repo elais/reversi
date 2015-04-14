@@ -74,8 +74,8 @@ public class Heuristics {
     public double applyAsDouble(final Node a) {
       double score;
       score = frontiers.applyAsDouble(a)
-              + corner_closeness.applyAsDouble(a) 
-              + corner_occupancy.applyAsDouble(a) 
+              + corner_closeness.applyAsDouble(a)
+              + corner_occupancy.applyAsDouble(a)
               + mobility.applyAsDouble(a);
       return score;
     }

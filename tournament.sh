@@ -1,7 +1,7 @@
 #!/bin/bash
 set -x
 
-baseline_strategies=$(find src/main/java/edu/uab/cis/reversi/strategy/group2 -name "FalseGroup*Strategy.java" | \
+baseline_strategies=$(find src/main/java/edu/uab/cis/reversi/strategy/group2 -name "negaScout.java" | \
                    sed -e 's/\//./g' -e 's/src.main.java.//g' -e 's/.java//g' | \
                    tr '\n' ' ')
 group_strategies=$(find src/main/java/edu/uab/cis/reversi/strategy/group2 -name "Group*Strategy.java" | \

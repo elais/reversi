@@ -2,10 +2,48 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5388ea34-eba9-42a3-812f-f111723cf693" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/FalseGroup2Strategy.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Leaf.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/TranspositionTable.java" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/classes/production/reversi/edu/uab/cis/reversi/Board$1.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/classes/production/reversi/edu/uab/cis/reversi/Board.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/classes/production/reversi/edu/uab/cis/reversi/Move.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/classes/production/reversi/edu/uab/cis/reversi/Player$1.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/classes/production/reversi/edu/uab/cis/reversi/Player.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/classes/production/reversi/edu/uab/cis/reversi/Reversi$1.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/classes/production/reversi/edu/uab/cis/reversi/Reversi$Options.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/classes/production/reversi/edu/uab/cis/reversi/Reversi$Result.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/classes/production/reversi/edu/uab/cis/reversi/Reversi$StrategyTimedOutException.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/classes/production/reversi/edu/uab/cis/reversi/Reversi.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/classes/production/reversi/edu/uab/cis/reversi/Square$1.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/classes/production/reversi/edu/uab/cis/reversi/Square.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/classes/production/reversi/edu/uab/cis/reversi/Strategy.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/classes/production/reversi/edu/uab/cis/reversi/strategy/baseline/RandomStrategy.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/classes/production/reversi/edu/uab/cis/reversi/strategy/group2/Evaluator.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/classes/production/reversi/edu/uab/cis/reversi/strategy/group2/Group2Strategy$IterativeDeepening.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/classes/production/reversi/edu/uab/cis/reversi/strategy/group2/Group2Strategy$TimeLapsedException.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/classes/production/reversi/edu/uab/cis/reversi/strategy/group2/Group2Strategy.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/classes/production/reversi/edu/uab/cis/reversi/strategy/group2/Heuristics$1.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/classes/production/reversi/edu/uab/cis/reversi/strategy/group2/Heuristics.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/classes/production/reversi/edu/uab/cis/reversi/strategy/group2/Leaf.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/classes/production/reversi/edu/uab/cis/reversi/strategy/group2/Memoizer.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/classes/production/reversi/edu/uab/cis/reversi/strategy/group2/Node.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/classes/production/reversi/edu/uab/cis/reversi/strategy/group2/TranspositionTable$Bound.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/classes/production/reversi/edu/uab/cis/reversi/strategy/group2/TranspositionTable.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/classes/test/reversi/edu/uab/cis/reversi/BoardTest.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/classes/test/reversi/edu/uab/cis/reversi/MoveTest.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/classes/test/reversi/edu/uab/cis/reversi/PlayerTest.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/classes/test/reversi/edu/uab/cis/reversi/ReversiTest$NeverTerminatesStrategy.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/classes/test/reversi/edu/uab/cis/reversi/ReversiTest$SequentialStrategy$1.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/classes/test/reversi/edu/uab/cis/reversi/ReversiTest$SequentialStrategy.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/classes/test/reversi/edu/uab/cis/reversi/ReversiTest.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/classes/test/reversi/edu/uab/cis/reversi/SquareTest.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/classes/test/reversi/edu/uab/cis/reversi/strategy/baseline/RandomStrategyTest.class" afterPath="" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/FalseGroup2Strategy.java" afterPath="$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/negaScout.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Group2Strategy.java" afterPath="$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Group2Strategy.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/Drew/HumblyObsolete.java" afterPath="$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/Drew/HumblyObsolete.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Heuristics.java" afterPath="$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Heuristics.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Node.java" afterPath="$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Node.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tournament.sh" afterPath="$PROJECT_DIR$/tournament.sh" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="reversi.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -27,31 +65,30 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="Group2Strategy.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Group2Strategy.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Group2Strategy.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-18.11111">
-              <caret line="189" column="49" selection-start-line="189" selection-start-column="38" selection-end-line="189" selection-end-column="49" />
+            <state vertical-scroll-proportion="1.1844962">
+              <caret line="157" column="5" selection-start-line="157" selection-start-column="5" selection-end-line="157" selection-end-column="5" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#2144#2150#0" expanded="true" />
-                <element signature="e#3732#3738#0" expanded="true" />
-                <element signature="e#6026#6032#0" expanded="true" />
-                <element signature="e#6892#6893#0" expanded="true" />
-                <element signature="e#6920#6921#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="FalseGroup2Strategy.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/FalseGroup2Strategy.java">
+      <file leaf-file-name="negaScout.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/negaScout.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.04957806">
-              <caret line="171" column="32" selection-start-line="171" selection-start-column="32" selection-end-line="171" selection-end-column="32" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="95" column="13" selection-start-line="95" selection-start-column="13" selection-end-line="95" selection-end-column="13" />
               <folding>
-                <element signature="e#8746#8747#0" expanded="true" />
-                <element signature="e#8774#8775#0" expanded="true" />
+                <element signature="imports" expanded="true" />
+                <element signature="e#2161#2167#0" expanded="true" />
+                <element signature="e#3736#3742#0" expanded="true" />
+                <element signature="e#6582#6588#0" expanded="true" />
+                <element signature="e#7450#7451#0" expanded="true" />
+                <element signature="e#7478#7479#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -91,20 +128,52 @@
         <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Node.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="45" column="5" selection-start-line="45" selection-start-column="5" selection-end-line="45" selection-end-column="5" />
+              <caret line="81" column="0" selection-start-line="81" selection-start-column="0" selection-end-line="81" selection-end-column="0" />
               <folding>
-                <element signature="e#1485#1486#0" expanded="true" />
-                <element signature="e#1514#1515#0" expanded="true" />
-                <element signature="e#1540#1541#0" expanded="true" />
-                <element signature="e#1590#1591#0" expanded="true" />
-                <element signature="e#1691#1692#0" expanded="true" />
-                <element signature="e#1712#1713#0" expanded="true" />
+                <element signature="imports" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="TranspositionTable.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/TranspositionTable.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="10" column="0" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Leaf.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Leaf.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Heuristics.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Heuristics.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="18" column="28" selection-start-line="18" selection-start-column="28" selection-end-line="18" selection-end-column="28" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
     </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -118,10 +187,21 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/Reversi.java" />
-        <option value="$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Node.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/Drew/HumblyObsolete.java" />
-        <option value="$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Group2Strategy.java" />
+        <option value="$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/mtdf/Node.java" />
+        <option value="$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/mtdf/Heuristics.java" />
+        <option value="$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/mtdf/FalseGroup2Strategy.java" />
+        <option value="$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/baseline/Node.java" />
+        <option value="$PROJECT_DIR$/tournament.sh" />
+        <option value="$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Heuristics.java" />
+        <option value="$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Leaf.java" />
+        <option value="$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Node.java" />
+        <option value="$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/TranspositionTable.java" />
+        <option value="$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/baseline/FalseGroup2Strategy.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/FalseGroup2Strategy.java" />
+        <option value="$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/MTDf.java" />
+        <option value="$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Group2Strategy.java" />
+        <option value="$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/negaScout.java" />
       </list>
     </option>
   </component>
@@ -162,7 +242,7 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scope" />
+      <pane id="PackagesPane" />
       <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
@@ -344,7 +424,7 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -357,6 +437,16 @@
     <property name="settings.editor.splitter.proportion" value="0.2" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/baseline" />
+      <recent name="$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/false" />
+      <recent name="$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy" />
+      <recent name="$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/mtdf" />
+    </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="edu.uab.cis.reversi.strategy.group2" />
+      <recent name="edu.uab.cis.reversi.strategy.baseline" />
+    </key>
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="edu.uab.cis.reversi.strategy.group2" />
     </key>
@@ -541,26 +631,27 @@
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32901296" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32901296" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20833333" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32901296" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -589,158 +680,9 @@
     <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Group2Strategy.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <caret line="198" column="0" selection-start-line="198" selection-start-column="0" selection-end-line="198" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#2144#2150#0" expanded="true" />
-            <element signature="e#3732#3738#0" expanded="true" />
-            <element signature="e#6026#6032#0" expanded="true" />
-            <element signature="e#6892#6893#0" expanded="true" />
-            <element signature="e#6920#6921#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/Reversi.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="142" column="0" selection-start-line="142" selection-start-column="0" selection-end-line="142" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Node.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="45" column="5" selection-start-line="45" selection-start-column="5" selection-end-line="45" selection-end-column="5" />
-          <folding>
-            <element signature="e#1485#1486#0" expanded="true" />
-            <element signature="e#1514#1515#0" expanded="true" />
-            <element signature="e#1540#1541#0" expanded="true" />
-            <element signature="e#1590#1591#0" expanded="true" />
-            <element signature="e#1691#1692#0" expanded="true" />
-            <element signature="e#1712#1713#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Group2Strategy.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#2144#2150#0" expanded="true" />
-            <element signature="e#3732#3738#0" expanded="true" />
-            <element signature="e#6026#6032#0" expanded="true" />
-            <element signature="e#6892#6893#0" expanded="true" />
-            <element signature="e#6920#6921#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/Reversi.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="142" column="0" selection-start-line="142" selection-start-column="0" selection-end-line="142" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Node.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="45" column="5" selection-start-line="45" selection-start-column="5" selection-end-line="45" selection-end-column="5" />
-          <folding>
-            <element signature="e#1485#1486#0" expanded="true" />
-            <element signature="e#1514#1515#0" expanded="true" />
-            <element signature="e#1540#1541#0" expanded="true" />
-            <element signature="e#1590#1591#0" expanded="true" />
-            <element signature="e#1691#1692#0" expanded="true" />
-            <element signature="e#1712#1713#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Group2Strategy.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#2144#2150#0" expanded="true" />
-            <element signature="e#3732#3738#0" expanded="true" />
-            <element signature="e#6026#6032#0" expanded="true" />
-            <element signature="e#6892#6893#0" expanded="true" />
-            <element signature="e#6920#6921#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/Reversi.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="142" column="0" selection-start-line="142" selection-start-column="0" selection-end-line="142" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Node.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="118" column="17" selection-start-line="118" selection-start-column="17" selection-end-line="118" selection-end-column="17" />
-          <folding>
-            <element signature="e#1485#1486#0" expanded="true" />
-            <element signature="e#1514#1515#0" expanded="true" />
-            <element signature="e#1540#1541#0" expanded="true" />
-            <element signature="e#1590#1591#0" expanded="true" />
-            <element signature="e#1691#1692#0" expanded="true" />
-            <element signature="e#1712#1713#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Group2Strategy.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#2144#2150#0" expanded="true" />
-            <element signature="e#3732#3738#0" expanded="true" />
-            <element signature="e#6026#6032#0" expanded="true" />
-            <element signature="e#6892#6893#0" expanded="true" />
-            <element signature="e#6920#6921#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/Reversi.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="142" column="0" selection-start-line="142" selection-start-column="0" selection-end-line="142" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_25.jdk/Contents/Home/src.zip!/java/util/function/Function.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33333334">
-          <caret line="48" column="6" selection-start-line="48" selection-start-column="6" selection-end-line="48" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Node.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="45" column="5" selection-start-line="45" selection-start-column="5" selection-end-line="45" selection-end-column="5" />
-          <folding>
-            <element signature="e#1485#1486#0" expanded="true" />
-            <element signature="e#1514#1515#0" expanded="true" />
-            <element signature="e#1540#1541#0" expanded="true" />
-            <element signature="e#1590#1591#0" expanded="true" />
-            <element signature="e#1691#1692#0" expanded="true" />
-            <element signature="e#1712#1713#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -761,28 +703,239 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Group2Strategy.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/Reversi.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-18.11111">
-          <caret line="189" column="49" selection-start-line="189" selection-start-column="38" selection-end-line="189" selection-end-column="49" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="142" column="0" selection-start-line="142" selection-start-column="0" selection-end-line="142" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Node.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="45" column="5" selection-start-line="45" selection-start-column="5" selection-end-line="45" selection-end-column="5" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#2144#2150#0" expanded="true" />
-            <element signature="e#3732#3738#0" expanded="true" />
-            <element signature="e#6026#6032#0" expanded="true" />
-            <element signature="e#6892#6893#0" expanded="true" />
-            <element signature="e#6920#6921#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/FalseGroup2Strategy.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Group2Strategy.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.04957806">
-          <caret line="171" column="32" selection-start-line="171" selection-start-column="32" selection-end-line="171" selection-end-column="32" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#8746#8747#0" expanded="true" />
-            <element signature="e#8774#8775#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/Reversi.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="142" column="0" selection-start-line="142" selection-start-column="0" selection-end-line="142" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Node.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="45" column="5" selection-start-line="45" selection-start-column="5" selection-end-line="45" selection-end-column="5" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Group2Strategy.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/Reversi.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="142" column="0" selection-start-line="142" selection-start-column="0" selection-end-line="142" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Node.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="45" column="5" selection-start-line="45" selection-start-column="5" selection-end-line="45" selection-end-column="5" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Group2Strategy.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/Reversi.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="142" column="0" selection-start-line="142" selection-start-column="0" selection-end-line="142" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Node.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="118" column="17" selection-start-line="118" selection-start-column="17" selection-end-line="118" selection-end-column="17" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Group2Strategy.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_25.jdk/Contents/Home/src.zip!/java/util/function/Function.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33333334">
+          <caret line="48" column="6" selection-start-line="48" selection-start-column="6" selection-end-line="48" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/Reversi.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="142" column="0" selection-start-line="142" selection-start-column="0" selection-end-line="142" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/Drew/HumblyObsolete.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="39" column="10" selection-start-line="39" selection-start-column="10" selection-end-line="39" selection-end-column="10" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tournament.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.08225807">
+          <caret line="3" column="78" selection-start-line="3" selection-start-column="78" selection-end-line="3" selection-end-column="78" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Leaf.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.105426356">
+          <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Leaf.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Node.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="81" column="0" selection-start-line="81" selection-start-column="0" selection-end-line="81" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/TranspositionTable.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.105426356">
+          <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/TranspositionTable.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="10" column="0" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Heuristics.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="18" column="28" selection-start-line="18" selection-start-column="28" selection-end-line="18" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/baseline/RandomStrategy.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="22" column="5" selection-start-line="22" selection-start-column="5" selection-end-line="22" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_25.jdk/Contents/Home/src.zip!/java/lang/Throwable.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.54418606">
+          <caret line="632" column="0" selection-start-line="632" selection-start-column="0" selection-end-line="633" selection-end-column="0" />
+          <folding>
+            <element signature="e#26222#26223#0" expanded="true" />
+            <element signature="e#26265#26266#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/negaScout.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="95" column="13" selection-start-line="95" selection-start-column="13" selection-end-line="95" selection-end-column="13" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#2161#2167#0" expanded="true" />
+            <element signature="e#3736#3742#0" expanded="true" />
+            <element signature="e#6582#6588#0" expanded="true" />
+            <element signature="e#7450#7451#0" expanded="true" />
+            <element signature="e#7478#7479#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/uab/cis/reversi/strategy/group2/Group2Strategy.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="1.1844962">
+          <caret line="157" column="5" selection-start-line="157" selection-start-column="5" selection-end-line="157" selection-end-column="5" />
+          <folding>
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>

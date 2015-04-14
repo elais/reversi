@@ -8,6 +8,7 @@ package edu.uab.cis.reversi.strategy.group2;
 import edu.uab.cis.reversi.Board;
 import edu.uab.cis.reversi.Square;
 import edu.uab.cis.reversi.Strategy;
+import edu.uab.cis.reversi.strategy.group2.*;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -23,18 +24,17 @@ import java.util.concurrent.TimeUnit;
  *
  * @author elais
  */
-public class FalseGroup2Strategy implements Strategy {
+public class negaScout implements Strategy {
   //private long startTime;
 
   //This is the alpha beta pruning algorithm
-  private Leaf negaMax(Leaf leaf, int depth, double alpha, double beta, Evaluator evaluate) throws TimeLapsedException {
+  private Leaf negaScout(Leaf leaf, int depth, double alpha, double beta, Evaluator evaluate) throws TimeLapsedException {
     //these are checks put in to place to make sure we have not run out of time
     //or that the search has now reached its max depth
     //on reaching the time limit the search cuts off and calculates the nodes at
     //the given depth
     if (timeOut) throw new TimeLapsedException("Time Lapsed");
     //Transposition table
-    nodeCount += 1;
     double alphaOriginal = alpha;
 
     //transposition table look up, node is the lookup key
@@ -47,6 +47,7 @@ public class FalseGroup2Strategy implements Strategy {
       else if (ttEntry.flag == TranspositionTable.Bound.UPPERBOUND) beta = Math.min(beta, ttEntry.value);
       if (alpha >= beta) return new Leaf(leaf.node, ttEntry.value, ttEntry.children);
     }
+    nodeCount += 1;
     if (timeOut) throw new TimeLapsedException("Time Lapsed");
 
     List<Leaf> child_list = new ArrayList<Leaf>();
@@ -75,18 +76,27 @@ public class FalseGroup2Strategy implements Strategy {
       } else for (Square s : leaf.node.getBoard().getCurrentPossibleSquares()) {
         Node n = new Node(leaf.node.play(s));
         n.setSquare(s);
-        Leaf child = new Leaf(n, -Heuristics.ex_wife.applyAsDouble(n), new ArrayList<Leaf>());
+        Leaf child = new Leaf(n, Double.NEGATIVE_INFINITY, new ArrayList<Leaf>());
         child_list.add(child);
       }
       child_list.sort(Comparator.comparing((Leaf e) -> e.score).reversed());
     }
-
     if (timeOut) throw new TimeLapsedException("Time Lapsed");
     //truthfully, this is the meat of the algorithm
     ArrayList<Leaf> updatedChildren = new ArrayList<Leaf>();
-    for (Leaf child: child_list) {
-      child.score = -negaMax(child, depth - 1, -beta, -alpha, evaluate).score;
-      if (timeOut) throw new TimeLapsedException("Time Lapsed");
+    for (int i = 0; i < child_list.size(); i++) {
+      Leaf child = child_list.get(i);
+      if(i > 0) {
+        child.score = negaScout(child, depth - 1, -alpha - 1, -alpha, evaluate).score;
+        if (timeOut) throw new TimeLapsedException("Time Lapsed");
+        if(alpha < child.score && child.score < beta){
+          child.score = -negaScout(child, depth - 1, -beta, -child.score, evaluate).score;
+          if (timeOut) throw new TimeLapsedException("Time Lapsed");
+        }
+      } else{
+        child.score = -negaScout(child, depth - 1, -beta, -alpha, evaluate).score;
+        if (timeOut) throw new TimeLapsedException("Time Lapsed");
+      }
       updatedChildren.add(child);
       bestValue = Math.max(bestValue, child.score);
       alpha = Math.max(alpha, child.score);
@@ -113,40 +123,6 @@ public class FalseGroup2Strategy implements Strategy {
     return winner;
   }
 
-  private Leaf MTDf(Leaf groot, double f, int depth){
-    double g = f;
-    double upperBound = Double.POSITIVE_INFINITY;
-    double lowerBound = Double.NEGATIVE_INFINITY;
-    double beta;
-    Leaf groot2 = groot;
-    Leaf mtdResult = groot;
-
-    while(lowerBound < upperBound && !timeOut){
-      if(g == lowerBound){
-        beta = g + 1;
-      } else{
-        beta = g;
-      }
-      try {
-        groot2 = negaMax(groot2, depth, beta - 1, beta, evaluate );
-        g = groot2.children.get(0).score;
-        mtdResult = groot2;
-        //System.out.println("HERE");
-        if(g < beta){
-          upperBound = g;
-        } else{
-          lowerBound = g;
-        }
-      } catch (TimeLapsedException e) {
-        return mtdResult;
-      }
-
-    }
-    //System.out.println("HERE");
-
-    return mtdResult;
-  }
-
   private volatile int nodeCount = 0;
   private Map<Integer, TranspositionTable> transpositionTable;
   private volatile Leaf root;
@@ -169,7 +145,7 @@ public class FalseGroup2Strategy implements Strategy {
         iddfs.done();
         root = iddfs.getResult();
         service.shutdown();
-        System.out.println("MTDf nodes counted: " + nodeCount);
+        System.out.println("NegaScout nodes counted: " + nodeCount);
         return root.children.get(0).node.getSquare();
       }
     } catch (Exception ex) {
@@ -187,7 +163,7 @@ public class FalseGroup2Strategy implements Strategy {
         child_list.add(child);
       }
       child_list.sort(Comparator.comparing((Leaf e) -> e.score).reversed());
-      System.out.println("MTDf nodes counted: " + nodeCount);
+      System.out.println("NegaScout nodes counted: " + nodeCount);
       return child_list.get(0).node.getSquare();
     }
     root = iddfs.getResult();
@@ -208,27 +184,20 @@ public class FalseGroup2Strategy implements Strategy {
     private Leaf result;
     private Leaf pretender;
     @Override
-    public synchronized void run() {
-      double f = 0;
-      try {
-        pretender = negaMax(root, 2, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, evaluate);
-        f = pretender.children.get(0).score;
-        System.out.println(f);
-      } catch (TimeLapsedException e) {
-        e.printStackTrace();
-      }
+    public synchronized void run() {      
+      pretender = root;
       timeOut = false;
-      int startDepth = 3;
+      int startDepth = 2;
       while (!timeOut && startDepth <= maxDepth) {
         try {
-          pretender = MTDf(pretender, f, startDepth);
+          pretender = negaScout(pretender, startDepth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, evaluate);
           if (pretender != null) {
             result = pretender;
           }
           startDepth += 1;
         } catch (Exception e) {
-          System.out.println("MTDf Final Depth: " + startDepth);
-          //e.printStackTrace();
+          System.out.println("NegaScout Final Depth: " + startDepth);
+
         }
       }
     }

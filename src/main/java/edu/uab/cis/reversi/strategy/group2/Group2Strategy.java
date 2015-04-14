@@ -35,7 +35,6 @@ public class Group2Strategy implements Strategy {
     //the given depth
     if (timeOut) throw new TimeLapsedException("Time Lapsed");
     //Transposition table
-    nodeCount += 1;
     double alphaOriginal = alpha;
 
     //transposition table look up, node is the lookup key
@@ -48,6 +47,7 @@ public class Group2Strategy implements Strategy {
       else if (ttEntry.flag == TranspositionTable.Bound.UPPERBOUND) beta = Math.min(beta, ttEntry.value);
       if (alpha >= beta) return new Leaf(leaf.node, ttEntry.value, ttEntry.children);
     }
+    nodeCount += 1;
     if (timeOut) throw new TimeLapsedException("Time Lapsed");
 
     List<Leaf> child_list = new ArrayList<Leaf>();
@@ -135,7 +135,7 @@ public class Group2Strategy implements Strategy {
         iddfs.done();
         root = iddfs.getResult();
         service.shutdown();
-        System.out.println("negaMax nodes counted: " + nodeCount);
+        System.out.println("NegaMax nodes counted: " + nodeCount);
         return root.children.get(0).node.getSquare();
       }
     } catch (Exception ex) {
@@ -153,7 +153,7 @@ public class Group2Strategy implements Strategy {
         child_list.add(child);
       }
       child_list.sort(Comparator.comparing((Leaf e) -> e.score).reversed());
-      System.out.println("negaMax nodes counted: " + nodeCount);
+      System.out.println("NegaMax nodes counted: " + nodeCount);
       return child_list.get(0).node.getSquare();
     }
     root = iddfs.getResult();
@@ -187,7 +187,7 @@ public class Group2Strategy implements Strategy {
           }
           startDepth += 1;
         } catch (Exception e) {
-          System.out.println("negaMax Final Depth: " + startDepth);
+          System.out.println("NegaMax Final Depth: " + startDepth);
 
         }
       }
