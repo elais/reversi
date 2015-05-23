@@ -149,7 +149,7 @@ public class negaScout implements Strategy {
         return root.children.get(0).node.getSquare();
       }
     } catch (Exception ex) {
-      System.out.println("Cought Exception");
+      System.out.println("Caught Exception");
       //ex.printStackTrace();
       ArrayList<Leaf> child_list = new ArrayList<Leaf>();
       if (root.node.getBoard().getCurrentPossibleSquares().isEmpty()) {

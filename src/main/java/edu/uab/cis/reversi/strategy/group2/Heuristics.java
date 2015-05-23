@@ -54,8 +54,8 @@ public class Heuristics {
     pointTable[1][3] = pointTable[3][1] = COMMON;
     pointTable[2][2] = pointTable[3][2] = FIFTH;
     pointTable[3][3] = STARTER;
-    // Duplicate values for top right quadrant
 
+    // Duplicate values for top right quadrant
     for (int i = 4; i < 8; i++) {
       for (int j = 0; j < 4; j++) {
         pointTable[j][i] = pointTable[(j)][7 - i];
@@ -69,17 +69,7 @@ public class Heuristics {
     }
   }
   
-  static final ToDoubleFunction<Node> ex_wife = new ToDoubleFunction<Node>() {
 
-    public double applyAsDouble(final Node a) {
-      double score;
-      score = frontiers.applyAsDouble(a)
-              + corner_closeness.applyAsDouble(a)
-              + corner_occupancy.applyAsDouble(a)
-              + mobility.applyAsDouble(a);
-      return score;
-    }
-  };
   
   // measures likelihood of getting taken
   static final ToDoubleFunction<Node> frontiers = (final Node a) -> {
@@ -307,6 +297,15 @@ public class Heuristics {
     else
       result = 0;
     return result * 78.922;    
+  };
+
+  static final ToDoubleFunction<Node> ex_wife = (final Node a) -> {
+    double score;
+    score = frontiers.applyAsDouble(a)
+            + corner_closeness.applyAsDouble(a)
+            + corner_occupancy.applyAsDouble(a)
+            + mobility.applyAsDouble(a);
+    return score;
   };
   
 
